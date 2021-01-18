@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Fink Heavy';
+    src: url('FinkHeavy.ttf')  format('truetype'), /* Safari, Android, iOS */
+}
+
+body {
+    font-family: 'FinkHeavy', sans-serif;
+}

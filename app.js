@@ -7,18 +7,6 @@ let weather;
 let music = new Audio();
 music.loop = true;
 
-function refreshTime() {
-    console.clear();
-    now = new Date();
-    if (now.getHours() !== hour) {
-        hour = now.getHours();
-    }
-    // get reference of next hour 
-    // if nextHour === prevHour+1 change music
-    // every 10 mins, if weather has changed, update music
-    console.log(now.toLocaleTimeString('en-US'));
-}
-
 function setCoords() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -32,13 +20,6 @@ function setCoords() {
     }
 }
 
-async function getWeather()
-{
-    let weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`);
-    return weatherJSON.weather[0].main;
-}
-
-// Handle all fetch requests
 async function getJSON(url) {
     try {
       const response = await fetch(url);
@@ -48,6 +29,11 @@ async function getJSON(url) {
     }
 }
 
+async function getWeather()
+{
+    let weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`);
+    return weatherJSON.weather[0].main;
+}
 
 function calcMusicId(hour, weather)
 {
