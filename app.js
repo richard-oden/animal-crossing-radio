@@ -58,14 +58,15 @@ async function getMusic(id)
 function fadeInMusic () {
     music.volume = 0.0;
     let fadeAudio = setInterval(() => {
+        let volumeRounded = Math.round(music.volume * 100) / 100;
         // Fade in until default volume is reached:
-        if (music.volume < 1.0) {
-            music.volume += 0.05;
-        }
+        volumeRounded += 0.05;
         // When default volume is reached, stop:
-        if (music.volume >= 1.0) {
+        if (volumeRounded >= 1) {
+            volumeRounded = 1;
             clearInterval(fadeAudio);
         }
+        music.volume = volumeRounded;
     }, 200);
 }
 

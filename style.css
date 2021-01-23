@@ -1,8 +1,90 @@
-@font-face {
-    font-family: 'Fink Heavy';
-    src: url('FinkHeavy.ttf')  format('truetype'), /* Safari, Android, iOS */
+/* Credit goes to Sarah Fossheim for her Animal Crossing inspired buttons: */
+/* https://codepen.io/fossheim/pen/RwPeVKG */
+
+:root {
+    --background: #E5FFB3;
+    --background-accent: #DBF8A3;
+    --background-accent-2: #BDE66E;
+    --light: #92DE34;
+    --dark: #69BC22;
+    --text: #025600;
 }
 
+@font-face {
+    font-family: FinkHeavy;
+    src: url('fonts/FinkHeavy.ttf')  format('truetype');
+}
+
+@font-face {
+    font-family: 'Rodin';
+    src: url('fonts/Rodin.otf') format('opentype');
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Rodin', sans-serif;
+}
+  
 body {
-    font-family: 'FinkHeavy', sans-serif;
+    background-image: url('background.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top left, bottom left;
+    min-height: 98vh;
+}
+  
+.menu {
+    display: block;
+    width: 400px;
+    padding: 10px;
+    background-color: var(--background);
+    border-radius: 30px;
+    margin: 0 auto 0 auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 30vh;
+}
+  
+button {
+    display: block;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: var(--light);
+    width: 100%;
+    height: 70px;
+    border-radius: 30px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    background-size: 100% 100%;
+    box-shadow: 0 0 0 7px var(--light) inset;
+    margin-bottom: 15px;
+}
+  
+button:hover {
+    background-image: linear-gradient(
+        145deg,
+        transparent 10%,
+        var(--dark) 10% 20%,
+        transparent 20% 30%,
+        var(--dark) 30% 40%,
+        transparent 40% 50%,
+        var(--dark) 50% 60%,
+        transparent 60% 70%,
+        var(--dark) 70% 80%,
+        transparent 80% 90%,
+        var(--dark) 90% 100%
+    );
+    animation: background 3s linear infinite;
+}
+  
+@keyframes background {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 400px 0;
+    }
 }
