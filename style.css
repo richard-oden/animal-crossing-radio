@@ -1,13 +1,28 @@
 /* Credit goes to Sarah Fossheim for her Animal Crossing inspired buttons: */
 /* https://codepen.io/fossheim/pen/RwPeVKG */
+/* Neon sign is based on Ananya Neogi's design: */
+/* https://codepen.io/ananyaneogi/pen/Bgozrz */
 
 :root {
     --background: #E5FFB3;
-    --background-accent: #DBF8A3;
-    --background-accent-2: #BDE66E;
+    --accent: #DBF8A3;
+    --accent-2: #BDE66E;
     --light: #92DE34;
     --dark: #69BC22;
     --text: #025600;
+    --neon: #ffdaa9;
+    --neon-glow:
+        0 0 2px #ff4800, 
+        0 0 6px #ff4800, 
+        0 0 10px #ff4800, 
+        0 0 18px #ff4800, 
+        0 0 40px #ff5100;
+    --neon-glow-inset:
+        inset 0 0 2px #ff4800, 
+        inset 0 0 6px #ff4800, 
+        inset 0 0 10px #ff4800, 
+        inset 0 0 18px #ff4800, 
+        inset 0 0 40px #ff5100;
 }
 
 @font-face {
@@ -16,51 +31,123 @@
 }
 
 @font-face {
-    font-family: 'Rodin';
-    src: url('fonts/Rodin.otf') format('opentype');
+    font-family: 'RodinBokutohProM';
+    src: url('fonts/FOT-RodinBokutoh Pro M.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'RodinBokutohProB';
+    src: url('fonts/FOT-RodinBokutoh Pro B.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'RodinBokutohProUB';
+    src: url('fonts/FOT-RodinBokutoh Pro UB.otf') format('opentype');
 }
 
 * {
     box-sizing: border-box;
-    font-family: 'Rodin', sans-serif;
+    color: var(--text);
 }
   
 body {
-    background-image: url('background.jpg');
-    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--light) url('background.jpg') no-repeat center;
     background-size: cover;
-    background-position: top left, bottom left;
-    min-height: 98vh;
+    min-height: 100vh;
 }
+
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: visible;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+header h1 {
+    display: inline-block;
+    transform: translateY(-20px) rotate(4deg);
+    border: 4px solid var(--neon);
+    border-radius: 15px;
+    padding: 10px;
+    line-height: 80%;
+    font-family: FinkHeavy, sans-serif;
+    font-size: 2.5em;
+    text-align: center;
+    box-shadow: var(--neon-glow), var(--neon-glow-inset);
+    text-shadow: var(--neon-glow);
+    color: var(--neon);
+    text-align: center;
+    margin: 0 auto;
+    animation: blink 12s infinite;
+    -webkit-animation: blink 12s infinite;
+} 
   
 .menu {
-    display: block;
-    width: 400px;
-    padding: 10px;
+    width: 80%;
+    padding: 15px;
     background-color: var(--background);
     border-radius: 30px;
     margin: 0 auto 0 auto;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 30vh;
+    top: 40vh;
+    box-shadow: 0 8px 6px -6px black;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+        "detect-btn"
+        "manual-input"
+        "manual-btn";
 }
   
-button {
-    display: block;
-    cursor: pointer;
+button,
+input {
     outline: none;
-    border: none;
-    background-color: var(--light);
+    display: block;
     width: 100%;
     height: 70px;
     border-radius: 30px;
     font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text);
+}
+
+button {
+    font-family: RodinBokutohProUB, sans-serif;
+    cursor: pointer;
+    border: none;
+    background-color: var(--light);
     background-size: 100% 100%;
     box-shadow: 0 0 0 7px var(--light) inset;
-    margin-bottom: 15px;
+    color: var(--text);
+}
+
+#detect-btn {
+    grid-area: detect-btn;
+    margin-bottom: 20px;
+}
+
+#manual-input {
+    font-family: RodinBokutohProB, sans-serif;
+    border: 3px solid var(--dark);
+    padding: 6px 0 6px 12px;
+    background-color: var(--accent);
+    color: var(--text);
+    grid-area: manual-input;
+}
+
+#manual-btn {
+    grid-area: manual-btn;
+}
+
+::placeholder, /* Chrome, Firefox, Opera, Safari 10.1+ */
+:-ms-input-placeholder, /* Internet Explorer 10-11 */
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--accent-2);
+    opacity: 1; /* Firefox*/
 }
   
 button:hover {
@@ -77,14 +164,90 @@ button:hover {
         transparent 80% 90%,
         var(--dark) 90% 100%
     );
-    animation: background 3s linear infinite;
+    animation: btn-background 3s linear infinite;
 }
   
-@keyframes background {
+@keyframes btn-background {
     0% {
         background-position: 0 0;
     }
     100% {
         background-position: 400px 0;
+    }
+}
+
+@-webkit-keyframes blink {
+    20%,
+    24%,
+    55% {
+        border-color: #111;
+        color: #111;
+        box-shadow: none;
+        text-shadow: none;
+    }
+
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
+        border-color: var(--neon);
+        color: var(--neon);
+        box-shadow: var(--neon-glow), var(--neon-glow-inset);
+        text-shadow: var(--neon-glow);
+    }
+}
+
+@keyframes blink {
+    20%,
+    24%,
+    55% {
+        border-color: #111;
+        color: #111;
+        box-shadow: none;
+        text-shadow: none;
+    }
+
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
+        border-color: var(--neon);
+        color: var(--neon);
+        box-shadow: var(--neon-glow), var(--neon-glow-inset);
+        text-shadow: var(--neon-glow);
+    }
+}
+
+@media (min-width: 700px) {
+    .menu {
+        width: 80%;
+        grid-template-columns: 3fr 1fr;
+        grid-template-areas:
+            "detect-btn detect-btn"
+            "manual-input manual-btn";
+    }
+
+    #detect-btn {
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 900px) {
+    .menu {
+        width: 40%;
+    }
+}
+
+@media (min-width: 1100px) {
+    .menu {
+        width: 30%;
     }
 }

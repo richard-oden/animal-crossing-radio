@@ -1,4 +1,6 @@
 const key = config.OPEN_WEATHER_KEY;
+const detectBtn = document.getElementById('detect-btn');
+
 let now;
 let hour;
 let lat;
@@ -87,4 +89,4 @@ function startApp() {
     }, 1000);
 }
 
-window.addEventListener('click', startApp);
+detectBtn.addEventListener('click', startApp);
