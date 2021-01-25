@@ -1,7 +1,6 @@
-import Papa from 'papaparse';
-
 const openWeatherKey = config.OPEN_WEATHER_KEY;
 const detectBtn = document.getElementById('detect-btn');
+const manualInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
 
 let now;
@@ -12,20 +11,21 @@ let weather;
 let music = new Audio();
 music.loop = true;
 
-Papa.parse('../worldcities.csv', {
-  header: true,
-  download: true,
-  dynamicTyping: true,
-  complete: function(results) {
-    console.log(results);
-  }
-});
+async function getJSON(url) {
+    try {
+      const response = await fetch(url);
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+}
 
 function setCoords() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             lat = position.coords.latitude;
             lon = position.coords.longitude;
+            detectLocation();
         }, () => {
             console.log('Unable to retrive location.');
         });
@@ -34,34 +34,24 @@ function setCoords() {
     }
 }
 
-function handleInput(inputStr) {
-    let inputArr = inputStr.split(/(?:\s|\W)+/gm);
-    let urlSubStr = ``;
-    // If input is only numbers, try zip code or coordinates:
-    if (!inputArr.every(isNaN)) {
-        urlSubStr += inputArr.length === 1 ? `zip=${inputArr[0]}` : `lat=${inputArr[0]}&lon=${inputArr[1]}`;
-    // If first item in input is number, try zip code and country:
-    } else if (!isNaN(inputArr[0])) {
-        urlSubStr += `zip=${inputArr[0]},${inputArr[1]}`;
-    // Else, try query:
+async function detectLocation() {
+    let worldCitiesJSON = await getJSON('../worldcities.json');
+    const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}`);
+    const cityName = weatherJSON.name;
+    const countryCode = weatherJSON.sys.country;
+    console.log(cityName, countryCode);
+    const foundCity = worldCitiesJSON.find(d => 
+        d.city.toLowerCase() === cityName.toLowerCase() &&
+        d.iso2.toLowerCase() === countryCode.toLowerCase()
+    );
+    let manualInputValue;
+    if (foundCity) {
+        const regionString = foundCity.admin_name ? `, ${foundCity.admin_name}` : ``;
+        manualInputValue = `${foundCity.city}${regionString}, ${foundCity.country}`;
     } else {
-        urlSubStr += `q=`
-        if (inputArr.length == 3) {}
-        for (let i = 0; i < inputArr.length; i++) {
-            if (acronymToFullName(inputArr[i])) inputArr[i] = acronymToFullName(inputArr[i]);
-            urlSubStr += i === inputArr.length-1 ? inputArr[i] : inputArr[i] + ',';
-        }
+        manualInputValue = `${cityName}, ${countryCode}`;
     }
-    return urlSubStr;
-}
-
-async function getJSON(url) {
-    try {
-      const response = await fetch(url);
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
+    manualInput.value = manualInputValue;
 }
 
 async function getWeather()
@@ -122,4 +112,4 @@ function startApp() {
     }, 1000);
 }
 
-detectBtn.addEventListener('click', startApp);
+detectBtn.addEventListener('click', setCoords);
