@@ -1,5 +1,7 @@
-const key = config.OPEN_WEATHER_KEY;
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const openWeatherKey = config.OPEN_WEATHER_KEY;
 const detectBtn = document.getElementById('detect-btn');
+const launchBtn = document.getElementById('launch-btn');
 
 let now;
 let hour;
@@ -8,6 +10,15 @@ let lon;
 let weather;
 let music = new Audio();
 music.loop = true;
+
+Papa.parse('../worldcities.csv', {
+  header: true,
+  download: true,
+  dynamicTyping: true,
+  complete: function(results) {
+    console.log(results);
+  }
+});
 
 function setCoords() {
     if (navigator.geolocation) {
@@ -22,6 +33,27 @@ function setCoords() {
     }
 }
 
+function handleInput(inputStr) {
+    let inputArr = inputStr.split(/(?:\s|\W)+/gm);
+    let urlSubStr = ``;
+    // If input is only numbers, try zip code or coordinates:
+    if (!inputArr.every(isNaN)) {
+        urlSubStr += inputArr.length === 1 ? `zip=${inputArr[0]}` : `lat=${inputArr[0]}&lon=${inputArr[1]}`;
+    // If first item in input is number, try zip code and country:
+    } else if (!isNaN(inputArr[0])) {
+        urlSubStr += `zip=${inputArr[0]},${inputArr[1]}`;
+    // Else, try query:
+    } else {
+        urlSubStr += `q=`
+        if (inputArr.length == 3) {}
+        for (let i = 0; i < inputArr.length; i++) {
+            if (acronymToFullName(inputArr[i])) inputArr[i] = acronymToFullName(inputArr[i]);
+            urlSubStr += i === inputArr.length-1 ? inputArr[i] : inputArr[i] + ',';
+        }
+    }
+    return urlSubStr;
+}
+
 async function getJSON(url) {
     try {
       const response = await fetch(url);
@@ -33,7 +65,7 @@ async function getJSON(url) {
 
 async function getWeather()
 {
-    let weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}`);
+    let weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}`);
     return weatherJSON.weather[0].main;
 }
 
@@ -90,3 +122,4 @@ function startApp() {
 }
 
 detectBtn.addEventListener('click', startApp);
+},{}]},{},[1]);

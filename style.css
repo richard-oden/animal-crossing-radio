@@ -102,7 +102,7 @@ header h1 {
     grid-template-areas:
         "detect-btn"
         "manual-input"
-        "manual-btn";
+        "launch-btn";
 }
   
 button,
@@ -139,8 +139,8 @@ button {
     grid-area: manual-input;
 }
 
-#manual-btn {
-    grid-area: manual-btn;
+#launch-btn {
+    grid-area: launch-btn;
 }
 
 ::placeholder, /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -232,7 +232,7 @@ button:hover {
         grid-template-columns: 3fr 1fr;
         grid-template-areas:
             "detect-btn detect-btn"
-            "manual-input manual-btn";
+            "manual-input launch-btn";
     }
 
     #detect-btn {
