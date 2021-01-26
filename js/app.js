@@ -1,4 +1,5 @@
 const openWeatherKey = config.OPEN_WEATHER_KEY;
+const locationForm = document.querySelector('.menu');
 const detectBtn = document.getElementById('detect-btn');
 const manualInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
@@ -34,24 +35,100 @@ function setCoords() {
     }
 }
 
-async function detectLocation() {
-    let worldCitiesJSON = await getJSON('../worldcities.json');
-    const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}`);
-    const cityName = weatherJSON.name;
-    const countryCode = weatherJSON.sys.country;
-    console.log(cityName, countryCode);
-    const foundCity = worldCitiesJSON.find(d => 
-        d.city.toLowerCase() === cityName.toLowerCase() &&
-        d.iso2.toLowerCase() === countryCode.toLowerCase()
+async function populateInputField(cityName, countryCode) {
+    const worldCitiesJSON = await getJSON('../worldcities.json');
+    const foundCity = worldCitiesJSON.find(c => 
+        c.city.toLowerCase() === cityName.toLowerCase() &&
+        c.iso2.toLowerCase() === countryCode.toLowerCase()
     );
     let manualInputValue;
+    // Use world cities data if present:
     if (foundCity) {
-        const regionString = foundCity.admin_name ? `, ${foundCity.admin_name}` : ``;
+        let regionString = ``;
+        if (foundCity.admin_name) {
+            let region;
+            if (Object.values(states).includes(foundCity.admin_name)) {
+                region = fullNameToAcronym(foundCity.admin_name);
+            } else {
+                region = foundCity.admin_name;
+            }
+            regionString = `, ${region}`;
+        }
         manualInputValue = `${foundCity.city}${regionString}, ${foundCity.country}`;
+    // Otherwise use OpenWeather data:
     } else {
         manualInputValue = `${cityName}, ${countryCode}`;
     }
     manualInput.value = manualInputValue;
+}
+
+async function detectLocation() {
+    const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}`);
+    const cityName = weatherJSON.name;
+    const countryCode = weatherJSON.sys.country;
+    populateInputField(cityName, countryCode);
+}
+
+//TODO: this needs to be done with regexes, right now it will return partial matches within words
+//for example: "Fabriano, Italy" returns "Bria, Central African Republic"
+async function getQueryString(inputValue, inputArr) {
+    const worldCitiesJSON = await getJSON('../worldcities.json');
+    
+    const foundCities = worldCitiesJSON.filter(c => 
+        inputValue.includes(c.city.toLowerCase()));
+    const foundRegions = worldCitiesJSON.filter(c => 
+        inputValue.includes(c.admin_name.toLowerCase()));
+        //TODO: this returns undefined if admin_name does not exist:
+        //|| inputValue.includes(fullNameToAcronym(c.admin_name).toLowerCase()));
+    const foundCountries = worldCitiesJSON.filter(c => 
+        inputValue.includes(c.country.toLowerCase())
+        || inputArr.includes(c.iso2.toLowerCase()) 
+        || inputArr.includes(c.iso3.toLowerCase()));
+
+    let queryString = `q=`;
+
+    if (foundCities.length) {
+        const citiesWithRegionAndCountry = foundCities.filter(c => 
+            foundRegions.includes(c) && foundCountries.includes(c));
+        const citiesWithRegion = foundCities.filter(c => foundRegions.includes(c));
+        const citiesWithCountry = foundCities.filter(c => foundCountries.includes(c));
+
+        let selectedCity;
+        if (citiesWithRegionAndCountry.length) selectedCity = citiesWithRegionAndCountry[0];
+        else if (citiesWithRegion.length) selectedCity = citiesWithRegion[0];
+        else if (citiesWithCountry.length) selectedCity = citiesWithCountry[0];
+        else selectedCity = foundCities[0];
+        let regionString = ``;
+        if (Object.values(states).includes(selectedCity.admin_name)) regionString = `,${selectedCity.admin_name}`;
+        queryString += `${selectedCity.city.normalize()}${regionString.normalize()},${selectedCity.country.normalize()}`;
+    } else if (foundRegions.length) {
+        const regionsWithCountry = foundRegions.filter(c => foundCountries.includes(c));
+
+        let selectedRegion;
+        if (regionsWithCountry.length) selectedRegion = regionsWithCountry[0];
+        else selectedRegion = foundRegions[0];
+        queryString += `${selectedRegion.admin_name.normalize()},${selectedRegion.country.normalize()}`;
+    } else if (foundCountries.length) {
+        queryString += foundCountries[0].normalize();
+    }
+    return queryString;
+}
+
+async function getUrlSubString() {
+    const inputValue = manualInput.value.toLowerCase();
+    const inputArr = inputValue.split(/(?:\s|\W)+/gm);
+    let urlSubString = ``;
+    // If input is only numbers, try zip code or coordinates:
+    if (!inputArr.every(isNaN)) {
+        urlSubString += inputArr.length === 1 ? `zip=${inputArr[0]}` : `lat=${inputArr[0]}&lon=${inputArr[1]}`;
+    // If first item in input is number, try zip code and country:
+    } else if (!isNaN(inputArr[0])) {
+        urlSubString += `zip=${inputArr[0]},${inputArr[1]}`;
+    // Else, try query:
+    } else {
+        urlSubString += await getQueryString(inputValue, inputArr);
+    }
+    return urlSubString;
 }
 
 async function getWeather()
@@ -113,3 +190,7 @@ function startApp() {
 }
 
 detectBtn.addEventListener('click', setCoords);
+locationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    console.log(getUrlSubString());
+});
