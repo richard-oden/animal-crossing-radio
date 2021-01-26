@@ -69,19 +69,17 @@ async function detectLocation() {
     populateInputField(cityName, countryCode);
 }
 
-//TODO: this needs to be done with regexes, right now it will return partial matches within words
-//for example: "Fabriano, Italy" returns "Bria, Central African Republic"
 async function getQueryString(inputValue, inputArr) {
     const worldCitiesJSON = await getJSON('../worldcities.json');
     
+    //TODO: Reformat place names separated by comma (e.g. 'Korea, South' => 'South Korea')
     const foundCities = worldCitiesJSON.filter(c => 
-        inputValue.includes(c.city.toLowerCase()));
-    const foundRegions = worldCitiesJSON.filter(c => 
-        inputValue.includes(c.admin_name.toLowerCase()));
-        //TODO: this returns undefined if admin_name does not exist:
-        //|| inputValue.includes(fullNameToAcronym(c.admin_name).toLowerCase()));
+        inputValue.match(RegExp(`\\b${c.city.toLowerCase()}\\b`, 'g')));
+        //TODO: Add way to detect US State abbreviations
+    const foundRegions = worldCitiesJSON.filter(c => c.admin_name != ''
+        && inputValue.match(RegExp(`\\b${c.admin_name.toLowerCase()}\\b`, 'g')));
     const foundCountries = worldCitiesJSON.filter(c => 
-        inputValue.includes(c.country.toLowerCase())
+        inputValue.match(RegExp(`\\b${c.country.toLowerCase()}\\b`, 'g'))
         || inputArr.includes(c.iso2.toLowerCase()) 
         || inputArr.includes(c.iso3.toLowerCase()));
 
@@ -109,7 +107,7 @@ async function getQueryString(inputValue, inputArr) {
         else selectedRegion = foundRegions[0];
         queryString += `${selectedRegion.admin_name.normalize()},${selectedRegion.country.normalize()}`;
     } else if (foundCountries.length) {
-        queryString += foundCountries[0].normalize();
+        queryString += foundCountries[0].country.normalize();
     }
     return queryString;
 }
