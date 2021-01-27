@@ -1,7 +1,7 @@
 // Credit goes to davidteacher, who posted this in the comments here:
 // https://gist.github.com/calebgrove/c285a9510948b633aa47
 
-const states = {
+const usStates = {
   AZ: 'Arizona',
   AL: 'Alabama',
   AK: 'Alaska',
@@ -62,12 +62,12 @@ const states = {
 }
 
 function acronymToFullName(acronym) {
-  if (states[acronym] != null) {
-    return states[acronym];
+  if (usStates[acronym] != null) {
+    return usStates[acronym];
   }
 }
 
 function fullNameToAcronym(fullName) {
-  return Object.keys(states).find(k => 
-    states[k].toLowerCase() === fullName.toLowerCase())
+  return Object.keys(usStates).find(k => 
+    usStates[k].toLowerCase() === fullName.toLowerCase())
 }

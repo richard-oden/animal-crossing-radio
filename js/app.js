@@ -47,7 +47,7 @@ async function populateInputField(cityName, countryCode) {
         let regionString = ``;
         if (foundCity.admin_name) {
             let region;
-            if (Object.values(states).includes(foundCity.admin_name)) {
+            if (Object.values(usStates).includes(foundCity.admin_name)) {
                 region = fullNameToAcronym(foundCity.admin_name);
             } else {
                 region = foundCity.admin_name;
@@ -69,45 +69,61 @@ async function detectLocation() {
     populateInputField(cityName, countryCode);
 }
 
-async function getQueryString(inputValue, inputArr) {
+function getMatchingCities(input, db, prop){
+    const output = [];
+    db.forEach(c => {
+        // Matches case insensitive instances of property value, normalized property value, and uncomma'd property value:
+        const regex = RegExp(`\\b${c[prop].normalize()}\\b|\\b${c[prop]}\\b|\\b${c[prop].replace(/(.*), (.*)/g, '$2 $1')}\\b`, 'gi');
+        if (c[prop] != '' && input.match(regex)) {
+            output.push(c);
+        }
+    });
+    return output;
+}
+
+async function getQueryString(inputValue) {
+    function formatQueryArg(input) {
+        let formatted = input.normalize();
+        if (/(.*), (.*)/g.test(formatted)) {
+            return formatted.replace(/(.*), (.*)/g, '$2 $1');
+        } else {
+            return formatted;
+        }
+    }
+
     const worldCitiesJSON = await getJSON('../worldcities.json');
-    
-    //TODO: Reformat place names separated by comma (e.g. 'Korea, South' => 'South Korea')
-    const foundCities = worldCitiesJSON.filter(c => 
-        inputValue.match(RegExp(`\\b${c.city.toLowerCase()}\\b`, 'g')));
+    const foundCities = getMatchingCities(inputValue, worldCitiesJSON, 'city');
         //TODO: Add way to detect US State abbreviations
-    const foundRegions = worldCitiesJSON.filter(c => c.admin_name != ''
-        && inputValue.match(RegExp(`\\b${c.admin_name.toLowerCase()}\\b`, 'g')));
-    const foundCountries = worldCitiesJSON.filter(c => 
-        inputValue.match(RegExp(`\\b${c.country.toLowerCase()}\\b`, 'g'))
-        || inputArr.includes(c.iso2.toLowerCase()) 
-        || inputArr.includes(c.iso3.toLowerCase()));
+    const citiesWithFoundRegion = getMatchingCities(inputValue, worldCitiesJSON, 'admin_name');
+    const citiesWithFoundCountry = getMatchingCities(inputValue, worldCitiesJSON, 'country');
+        citiesWithFoundCountry.concat(getMatchingCities(inputValue, worldCitiesJSON, 'iso2'));
+        citiesWithFoundCountry.concat(getMatchingCities(inputValue, worldCitiesJSON, 'iso3'));
 
     let queryString = `q=`;
-
     if (foundCities.length) {
-        const citiesWithRegionAndCountry = foundCities.filter(c => 
-            foundRegions.includes(c) && foundCountries.includes(c));
-        const citiesWithRegion = foundCities.filter(c => foundRegions.includes(c));
-        const citiesWithCountry = foundCities.filter(c => foundCountries.includes(c));
+        const cityWithKnownRegionAndCountry = foundCities.find(c => 
+            citiesWithFoundRegion.includes(c) && citiesWithFoundCountry.includes(c));
+        const cityWithKnownRegion = foundCities.find(c => citiesWithFoundRegion.includes(c));
+        const cityWithKnownCountry = foundCities.find(c => citiesWithFoundCountry.includes(c));
 
         let selectedCity;
-        if (citiesWithRegionAndCountry.length) selectedCity = citiesWithRegionAndCountry[0];
-        else if (citiesWithRegion.length) selectedCity = citiesWithRegion[0];
-        else if (citiesWithCountry.length) selectedCity = citiesWithCountry[0];
+        if (cityWithKnownRegionAndCountry) selectedCity = cityWithKnownRegionAndCountry;
+        else if (cityWithKnownRegion) selectedCity = cityWithKnownRegion;
+        else if (cityWithKnownCountry) selectedCity = cityWithKnownCountry;
         else selectedCity = foundCities[0];
+
         let regionString = ``;
-        if (Object.values(states).includes(selectedCity.admin_name)) regionString = `,${selectedCity.admin_name}`;
-        queryString += `${selectedCity.city.normalize()}${regionString.normalize()},${selectedCity.country.normalize()}`;
-    } else if (foundRegions.length) {
-        const regionsWithCountry = foundRegions.filter(c => foundCountries.includes(c));
+        if (Object.values(usStates).includes(selectedCity.admin_name)) regionString = `,${formatQueryArg(selectedCity.admin_name)}`;
+        queryString += `${formatQueryArg(selectedCity.city)}${regionString},${formatQueryArg(selectedCity.country)}`;
+    } else if (citiesWithFoundRegion.length) {
+        const regionWithKnownCountry = citiesWithFoundRegion.find(c => citiesWithFoundCountry.includes(c));
 
         let selectedRegion;
-        if (regionsWithCountry.length) selectedRegion = regionsWithCountry[0];
-        else selectedRegion = foundRegions[0];
-        queryString += `${selectedRegion.admin_name.normalize()},${selectedRegion.country.normalize()}`;
-    } else if (foundCountries.length) {
-        queryString += foundCountries[0].country.normalize();
+        if (regionWithKnownCountry) selectedRegion = regionWithKnownCountry;
+        else selectedRegion = citiesWithFoundRegion[0];
+        queryString += `${formatQueryArg(selectedRegion.admin_name)},${formatQueryArg(selectedRegion.country)}`;
+    } else if (citiesWithFoundCountry.length) {
+        queryString += formatQueryArg(citiesWithFoundCountry[0].country);
     }
     return queryString;
 }
