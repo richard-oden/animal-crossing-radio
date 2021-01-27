@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title>Animal Crossing Radio</title>
 </head>
 <body>
     <header>
-        <img src="logo.png">
+        <img src="logo.png" alt="Animal Crossing Logo">
         <h1>RADIO</h1>
     </header>
     <form class="menu">
-        <button id="detect-btn">Get my location</button>
+        <button id="detect-btn" type="button">Get my location</button>
         <input id="manual-input" type="text" placeholder="Or enter it here...">
         <button id="launch-btn" type="submit">Go!</button>
     </form>
@@ -20,4 +20,7 @@
 <script src="js/config.js"></script>
 <script src="js/convert-us-states.js"></script>
 <script src='js/app.js'></script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=[KEY]&callback=initGeocoder">
+</script>
 </html>
