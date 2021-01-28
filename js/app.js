@@ -1,4 +1,5 @@
 const openWeatherKey = config.OPEN_WEATHER_KEY;
+const googleKey = config.GOOGLE_KEY;
 const locationForm = document.querySelector('.menu');
 const detectBtn = document.getElementById('detect-btn');
 const locationInput = document.getElementById('manual-input');
@@ -66,9 +67,21 @@ async function populateInput() {
     });
 }
 
+async function getTimezone(date)
+{
+    const timestamp = Math.round(date.getTime() / 1000);
+    const timezoneJSON = await getJSON(`https://maps.googleapis.com/maps/api/timezone/json?location=${coords[0]},${coords[1]}&timestamp=${timestamp}&key=${googleKey}`);
+    if (timezoneJSON.status === "OK") {
+        return (parseInt(timezoneJSON.dstOffset) + parseInt(timezoneJSON.rawOffset)) / 60;
+    } else {
+        alert("Timezone API request failed due to: " + timezoneJSON.status);
+    }
+    
+}
+
 async function getWeather()
 {
-    let weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${coords[0]}&lon=${coords[1]}&appid=${openWeatherKey}`);
+    const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${coords[0]}&lon=${coords[1]}&appid=${openWeatherKey}`);
     return weatherJSON.weather[0].main;
 }
 
