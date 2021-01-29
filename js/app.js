@@ -5,7 +5,7 @@ const detectBtn = document.getElementById('detect-btn');
 const locationInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
 
-let now;
+let timeString;
 let hour;
 let coords;
 let weather;
@@ -67,22 +67,25 @@ async function populateInput() {
     });
 }
 
-async function getTimezone(date)
+async function setTimeAtCoords()
 {
-    const timestamp = Math.round(date.getTime() / 1000);
+    const d = new Date();
+    const timestamp = Math.round(d.getTime() / 1000);
     const timezoneJSON = await getJSON(`https://maps.googleapis.com/maps/api/timezone/json?location=${coords[0]},${coords[1]}&timestamp=${timestamp}&key=${googleKey}`);
     if (timezoneJSON.status === "OK") {
-        return (parseInt(timezoneJSON.dstOffset) + parseInt(timezoneJSON.rawOffset)) / 60;
+        const options = {hour: 'numeric', minute: 'numeric', second: 'numeric', timeZone: timezoneJSON.timeZoneId};
+        timeString = Intl.DateTimeFormat(navigator.language, options).format(d);
+        hour = parseInt(Intl.DateTimeFormat('en-US', {hour: 'numeric', hour12: false, timeZone: timezoneJSON.timeZoneId}).format(d));
+        if (hour == 24) hour = 0;
     } else {
         alert("Timezone API request failed due to: " + timezoneJSON.status);
     }
-    
 }
 
 async function getWeather()
 {
     const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${coords[0]}&lon=${coords[1]}&appid=${openWeatherKey}`);
-    return weatherJSON.weather[0].main;
+    weather = weatherJSON.weather[0].main;
 }
 
 function calcMusicId(hour, weather)
@@ -105,8 +108,12 @@ async function getMusic(id)
     fadeInMusic();
 }
 
+async function updateMusic() {
+    await getMusic(calcMusicId(hour, weather));
+}
+
 function fadeInMusic () {
-    music.volume = 0.0;
+    music.volume = 0;
     let fadeAudio = setInterval(() => {
         let volumeRounded = Math.round(music.volume * 100) / 100;
         // Fade in until default volume is reached:
@@ -120,19 +127,25 @@ function fadeInMusic () {
     }, 200);
 }
 
-function startApp() {
+async function startApp() {
+    let seconds = 0;
+    await setTimeAtCoords();
+    await getWeather();
+    await updateMusic();
     setInterval(async () => {
         console.clear();
-        now = new Date();
-        if (now.getHours() !== hour ||
-            await getWeather() != weather) {
-            hour = now.getHours();
-            weather = await getWeather();
-            let id = calcMusicId(hour, weather);
-            await getMusic(id);
+        // If hour has changed, update music:
+        let prevHour = hour;
+        await setTimeAtCoords();
+        if (prevHour !== hour) updateMusic();
+        // Every ten minutes, if weather has changed, update music;
+        if (seconds % 600 == 0) {
+            let prevWeather = weather;
+            await getWeather();
+            if (prevWeather !== weather) updateMusic();
         }
-        console.log(now.toLocaleTimeString('en-US'));
-        console.log(weather);
+        console.log(timeString, weather);
+        seconds++;
     }, 1000);
 }
 
