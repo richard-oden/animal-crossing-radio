@@ -57,6 +57,7 @@ body {
     background: var(--light) url('background.jpg') no-repeat center;
     background-size: cover;
     min-height: 100vh;
+    margin: 0;
 }
 
 header {
@@ -105,8 +106,8 @@ header h1 {
         "launch-btn";
 }
   
-button,
-input {
+.menu button,
+.menu input {
     outline: none;
     display: block;
     width: 100%;
@@ -115,7 +116,7 @@ input {
     font-size: 1.5rem;
 }
 
-button {
+.menu button {
     font-family: RodinBokutohProUB, sans-serif;
     cursor: pointer;
     border: none;
@@ -150,7 +151,7 @@ button {
     opacity: 1; /* Firefox*/
 }
   
-button:hover {
+.menu button:hover {
     background-image: linear-gradient(
         145deg,
         transparent 10%,
@@ -165,6 +166,49 @@ button:hover {
         var(--dark) 90% 100%
     );
     animation: btn-background 3s linear infinite;
+}
+
+.music-controls {
+    background-color: var(--background);
+    padding: 0 25px;
+    width: 100%; height: 65px;
+    position: fixed;
+    left: 0; bottom: 0;
+}
+
+.toggle-music-btn {
+    border: none;
+    outline: none;
+    background-color: var(--light);
+    box-shadow: 0 0 0 20px var(--background);
+    border-radius: 100%;
+    display: inline-block;
+    transform: translateY(-35%);
+    padding: 20px;
+    cursor: pointer;
+}
+
+.toggle-music-btn::after {
+    content: "";
+	display: block;
+    position: relative;
+    left: 4px;
+	width: 0; height: 0;
+    border-color: transparent transparent transparent var(--text);
+    transition: 100ms all ease;
+    will-change: border-width;
+
+    /* play state */
+    border-style: solid;
+	border-width: 20px 0 20px 38px;
+}
+
+.toggle-music-btn.paused::after {
+    /* paused state */
+    height: 38px;
+    left: 0;
+    border-style: double;
+    border-width: 0 0 0 38px;
 }
   
 @keyframes btn-background {

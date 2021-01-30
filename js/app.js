@@ -4,6 +4,7 @@ const locationForm = document.querySelector('.menu');
 const detectBtn = document.getElementById('detect-btn');
 const locationInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
+const toggleMusicBtn = document.querySelector('.toggle-music-btn');
 
 const user = {
     timeString: null,
@@ -173,4 +174,8 @@ locationForm.addEventListener('submit', (e) => {
     } else {
         alert('Location not found!');
     }
+});
+
+toggleMusicBtn.addEventListener('click', () => {
+    toggleMusicBtn.classList.toggle("paused");
 });
