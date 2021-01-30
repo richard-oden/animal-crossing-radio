@@ -4,7 +4,8 @@ const locationForm = document.querySelector('.menu');
 const detectBtn = document.getElementById('detect-btn');
 const locationInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
-const toggleMusicBtn = document.querySelector('.toggle-music-btn');
+const toggleMusicBtn = document.getElementById('toggle-music-btn');
+const musicControls = document.querySelector('.music-controls');
 
 const user = {
     timeString: null,
@@ -171,6 +172,7 @@ locationForm.addEventListener('submit', (e) => {
             clearInterval(appRunning);
         }
         startApp();
+        musicControls.classList.toggle("collapsed");
     } else {
         alert('Location not found!');
     }
@@ -178,4 +180,10 @@ locationForm.addEventListener('submit', (e) => {
 
 toggleMusicBtn.addEventListener('click', () => {
     toggleMusicBtn.classList.toggle("paused");
+    if (toggleMusicBtn.classList.contains("paused")) {
+        startApp();
+    } else {
+        music.pause();
+        clearInterval(appRunning);
+    }
 });
