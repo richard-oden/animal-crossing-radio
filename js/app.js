@@ -7,6 +7,7 @@ const launchBtn = document.getElementById('launch-btn');
 const musicControls = document.querySelector('.music-controls');
 const toggleMusicBtn = document.getElementById('toggle-music-btn');
 const dateTimeDiv = document.getElementById('date-time');
+const weatherDiv = document.getElementById('weather');
 
 const user = {
     coords: null,
@@ -193,10 +194,21 @@ function printTime() {
     </div>`;
 }
 
+function printWeather() {
+    weatherDiv.innerHTML =
+    `<div class="temp">${Math.round(user.weather.tempC)}<span>&deg;</span><span>C</span></div>
+    <div class="temp">/</div>
+    <div class="temp">${Math.round(user.weather.tempF)}<span>&deg;</span><span>F</span></div>
+    <img src="${user.weather.imgURL}" alt="${user.weather.main}">
+    <div id="weather-desc">${user.weather.main}</div>
+    `;
+}
+
 async function startApp() {
     let seconds = 0;
     await setTimeAtCoords();
     await getWeather();
+    printWeather();
     const id = calcMusicId();
     getMusic(id);
     appRunning = setInterval(async () => {
@@ -208,6 +220,7 @@ async function startApp() {
         if (seconds % 600 == 0) {
             let prevWeather = user.weather.main;
             await getWeather();
+            printWeather();
             if (prevWeather !== user.weather.main) transitionMusic();
         }
         printTime();
