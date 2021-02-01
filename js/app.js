@@ -6,11 +6,16 @@ const locationInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
 const musicControls = document.querySelector('.music-controls');
 const toggleMusicBtn = document.getElementById('toggle-music-btn');
-const dateTimeWrapper = document.getElementById('date-time-wrapper');
+const dateTimeDiv = document.getElementById('date-time');
 
 const user = {
     coords: null,
-    weather: null,
+    weather: {
+        main: null,
+        tempF: null,
+        tempC: null,
+        imgURL: null
+    },
     dateTime: {
         _hour: null,
         _timeString: null,
@@ -121,18 +126,20 @@ async function setTimeAtCoords()
     }
 }
 
-async function getWeather()
-{
+async function getWeather() {
     const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${user.coords[0]}&lon=${user.coords[1]}&appid=${openWeatherKey}`);
-    user.weather = weatherJSON.weather[0].main;
+    user.weather.main = weatherJSON.weather[0].main;
+    user.weather.tempC = parseInt(weatherJSON.main.temp) - 273.15;
+    user.weather.tempF = (user.weather.tempC * 9/5) + 32;
+    user.weather.imgURL = `http://openweathermap.org/img/w/${weatherJSON.weather[0].icon}.png`;
 }
 
 function calcMusicId()
 {
     let id = (user.dateTime.hour * 3) + 1;
-    if (['Thunderstorm', 'Drizzle', 'Rain'].includes(user.weather)) {
+    if (['Thunderstorm', 'Drizzle', 'Rain'].includes(user.weather.main)) {
         return id;
-    } else if (user.weather === 'Snow') {
+    } else if (user.weather.main === 'Snow') {
         return id + 1;
     } else {
         return id + 2;
@@ -177,14 +184,12 @@ function transitionMusic() {
 }
 
 function printTime() {
-    dateTimeWrapper.innerHTML =
-    `<div class="date-time">
-            <time datetime="${user.dateTime.iso}">${user.dateTime.timeString}</time>
-            <span id="am-pm">${user.dateTime.amPM}</span>
-        <div id="date-wrapper">
-            <span id="date">${user.dateTime.date}</span>
-            <span id="weekday">${user.dateTime.weekday}.</span>
-        </div>
+    dateTimeDiv.innerHTML =
+    `<time datetime="${user.dateTime.iso}">${user.dateTime.timeString}</time>
+    <span id="am-pm">${user.dateTime.amPM}</span>
+    <div id="date-wrapper">
+        <span id="date">${user.dateTime.date}</span>
+        <span id="weekday">${user.dateTime.weekday}.</span>
     </div>`;
 }
 
@@ -195,16 +200,15 @@ async function startApp() {
     const id = calcMusicId();
     getMusic(id);
     appRunning = setInterval(async () => {
-        console.clear();
         // If hour has changed, update music:
         let prevHour = user.dateTime.hour;
         await setTimeAtCoords();
         if (prevHour !== user.dateTime.hour) transitionMusic();
         // Every ten minutes, if weather has changed, update music;
         if (seconds % 600 == 0) {
-            let prevWeather = user.weather;
+            let prevWeather = user.weather.main;
             await getWeather();
-            if (prevWeather !== user.weather) transitionMusic();
+            if (prevWeather !== user.weather.main) transitionMusic();
         }
         printTime();
         seconds++;
