@@ -52,7 +52,8 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-top: 20px;
     background: var(--light) url('background.jpg') no-repeat center;
     color: var(--text);
     font-family: RodinBokutohProB, sans-serif;
@@ -67,19 +68,19 @@ header {
     justify-content: center;
     overflow: visible;
     align-items: center;
-    width: 100%;
+    width: 40%;
     margin: 0 auto;
 }
 
-header h1 {
+header > h1 {
     display: inline-block;
     transform: translateY(-20px) rotate(4deg);
-    border: 4px solid var(--neon);
+    border: 3.4px solid var(--neon);
     border-radius: 15px;
-    padding: 10px;
+    padding: 7px;
     line-height: 80%;
     font-family: FinkHeavy, sans-serif;
-    font-size: 2.5em;
+    font-size: 1.65em;
     text-align: center;
     box-shadow: var(--neon-glow), var(--neon-glow-inset);
     text-shadow: var(--neon-glow);
@@ -88,7 +89,12 @@ header h1 {
     margin: 0 auto;
     animation: blink 12s infinite;
     -webkit-animation: blink 12s infinite;
-} 
+}
+
+header > img {
+    height: auto;
+    width: 200px;
+}
   
 .menu {
     width: 80%;
@@ -96,7 +102,6 @@ header h1 {
     background-color: var(--background);
     border-radius: 30px;
     margin: 0 auto 0 auto;
-    top: 40vh;
     box-shadow: 0 8px 6px -6px black;
     display: grid;
     gap: 10px;
@@ -112,9 +117,9 @@ header h1 {
     outline: none;
     display: block;
     width: 100%;
-    height: 70px;
+    height: 50px;
     border-radius: 30px;
-    font-size: 1.5rem;
+    font-size: 1.25em;
 }
 
 .menu button {
@@ -173,7 +178,7 @@ header h1 {
     background-color: var(--background);
     box-shadow: 0 50px 0 0 var(--background); /* prevents bottom of div from showing during translateY*/
     padding: 0 25px;
-    width: 100%; height: 200px;
+    width: 100%; height: 160px;
     position: fixed;
     left: 0; bottom: 0;
     transition: all 1s cubic-bezier(.28,-0.33,.27,1.7);
@@ -378,14 +383,41 @@ header h1 {
     }
 }
 
-@media (min-width: 555px) {
+@media (min-width: 400px) {
     .music-controls {
-        padding: 0 25px;
+        height: 180px;
+    }
+
+    #date-time,
+    #weather {
+        font-size: 1em;
+    }
+}
+
+@media (min-width: 630px) {
+    header > img {
+        width: 300px;
+    }
+
+    header > h1 {
+        font-size: 2.5em;
+        padding: 10px;
+        border-width: 4px;
+    }
+
+    .menu > button,
+    .menu > input {
+        font-size: 1.5em;
+        height: 70px;
+    }
+
+    .music-controls {
+        padding: 0 40px;
         height: 100px;
-        grid-template-columns: 136px 1fr 1fr;
+        grid-template-columns: repeat(3, minmax(200, 1fr));
         grid-template-rows: 136px;
         column-gap: 30px;
-        /* justify-items: start; */
+        justify-items: start;
     }
 
     #toggle-music-btn {
@@ -395,7 +427,6 @@ header h1 {
     #date-time,
     #weather {
         padding-top: 20px;
-        font-size: 1em;
         transform: translateY(0);
     }
 
@@ -412,9 +443,14 @@ header h1 {
     }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 800px) {
+    body {
+        padding-top: 0;
+        justify-content: center;
+    }
+
     .menu {
-        width: 80%;
+        width: 70%;
         grid-template-columns: 3fr 1fr;
         grid-template-areas:
             "detect-btn detect-btn"
@@ -426,14 +462,12 @@ header h1 {
     }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1000px) {
     .menu {
-        width: 40%;
+        width: 50%;
     }
-}
 
-@media (min-width: 1100px) {
-    .menu {
-        width: 30%;
+    .music-controls {
+        grid-template-columns: 200px 200px 200px;
     }
 }
