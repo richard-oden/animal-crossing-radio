@@ -54,7 +54,7 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     padding-top: 20px;
-    background: var(--light) url('background.jpg') no-repeat center;
+    background: var(--light) url('img/background.jpg') no-repeat center;
     color: var(--text);
     font-family: RodinBokutohProB, sans-serif;
     background-size: cover;
@@ -172,6 +172,16 @@ header > img {
         var(--dark) 90% 100%
     );
     animation: btn-background 3s linear infinite;
+}
+
+#game-wrapper {
+    display: none;
+    width: 100%;
+    text-align: center;
+}
+
+#game-wrapper > canvas {
+    display: inline-block;
 }
 
 .music-controls {

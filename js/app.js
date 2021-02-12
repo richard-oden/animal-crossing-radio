@@ -8,6 +8,8 @@ const musicControls = document.querySelector('.music-controls');
 const toggleMusicBtn = document.getElementById('toggle-music-btn');
 const dateTimeDiv = document.getElementById('date-time');
 const weatherDiv = document.getElementById('weather');
+const header = document.querySelector('header');
+const menu = document.querySelector('form');
 
 const user = {
     coords: null,
@@ -253,5 +255,14 @@ toggleMusicBtn.addEventListener('click', () => {
     } else {
         music.pause();
         clearInterval(appRunning);
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key = 'Tab') {
+        header.style.display = 'none';
+        menu.style.display = 'none';
+        gameWrapper.style.display = 'block'; // Defined in game.js
+        Game.slingshot();
     }
 });
