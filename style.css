@@ -23,6 +23,8 @@
         inset 0 0 10px #ff4800, 
         inset 0 0 18px #ff4800, 
         inset 0 0 40px #ff5100;
+    --bottom-height: 160px;
+    --media-query-transition: all 1s cubic-bezier(.28,-0.33,.27,1.7);
 }
 
 @font-face {
@@ -178,20 +180,24 @@ header > img {
     display: none;
     width: 100%;
     text-align: center;
+    position: fixed;
+    left: 0; bottom: calc(var(--bottom-height) - 10px);
+    transition: var(--media-query-transition);
 }
 
 #game-wrapper > canvas {
     display: inline-block;
+    padding: 0;
 }
 
 .music-controls {
     background-color: var(--background);
     box-shadow: 0 50px 0 0 var(--background); /* prevents bottom of div from showing during translateY*/
     padding: 0 25px;
-    width: 100%; height: 160px;
+    width: 100%; height: var(--bottom-height);
     position: fixed;
     left: 0; bottom: 0;
-    transition: all 1s cubic-bezier(.28,-0.33,.27,1.7);
+    transition: var(--media-query-transition);
     display: grid;
     grid-template-columns: minmax(120px, 1fr) 1fr;
     grid-template-rows: 136px 136px;
@@ -394,8 +400,8 @@ header > img {
 }
 
 @media (min-width: 400px) {
-    .music-controls {
-        height: 180px;
+    :root {
+        --bottom-height: 180px;
     }
 
     #date-time,
@@ -421,9 +427,12 @@ header > img {
         height: 70px;
     }
 
+    :root {
+        --bottom-height: 100px;
+    }
+
     .music-controls {
         padding: 0 40px;
-        height: 100px;
         grid-template-columns: repeat(3, minmax(200, 1fr));
         grid-template-rows: 136px;
         column-gap: 30px;

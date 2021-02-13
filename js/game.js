@@ -2,7 +2,7 @@ var Game = Game || {};
 const gameWrapper = document.getElementById('game-wrapper');
 
 Game.slingshot = function() {
-    var Engine = Matter.Engine,
+    let Engine = Matter.Engine,
         Render = Matter.Render,
         Runner = Matter.Runner,
         Composites = Matter.Composites,
@@ -15,11 +15,11 @@ Game.slingshot = function() {
         Body = Matter.Body;
 
     // create engine
-    var engine = Engine.create(),
+    let engine = Engine.create(),
         world = engine.world;
 
     // create renderer
-    var render = Render.create({
+    let render = Render.create({
         element: gameWrapper,
         engine: engine,
         options: {
@@ -35,11 +35,13 @@ Game.slingshot = function() {
     Render.run(render);
 
     // create runner
-    var runner = Runner.create();
+    let runner = Runner.create();
     Runner.run(runner, engine);
 
     // add bodies
-    var ground = Bodies.rectangle(395, 600, 815, 50, { isStatic: true, render: { fillStyle: '#060a19' } }),
+
+
+    let ground = Bodies.rectangle(400, 625, 815, 50, { isStatic: true, render: { visible: false } }),
         slingshot = Bodies.circle(410, 525, 1, {
             isStatic: true,
             render: { 
@@ -102,30 +104,35 @@ Game.slingshot = function() {
         elasticA = Constraint.create({ 
             pointA: anchorA, 
             bodyB: rock, 
-            stiffness: 0.05,
+            stiffness: 0.01,
             render: elasticRender
         }),
         elasticB = Constraint.create({ 
             pointA: anchorB, 
             bodyB: rock, 
-            stiffness: 0.05,
+            stiffness: 0.01,
             render: elasticRender
         }),
-        counter = -1;
+        counterX = -1,
+        counterY = -1
+
 
     World.add(engine.world, [ground, balloon, balloonString, present, slingshot, elasticA, elasticB, rock]);
 
     Events.on(engine, 'beforeUpdate', function(event) {
-        counter += 0.014;
-        var px = 400 + 200 * Math.sin(counter);
+        counterX += .005;
+        counterY += .04;
+        let px = 400 + 450 * Math.sin(counterX),
+            py = 60 + 10 * Math.sin(counterY);
 
         // body is static so must manually update velocity for friction to work
-        Body.setVelocity(balloon, { x: px - balloon.position.x, y: 0 });
-        Body.setPosition(balloon, { x: px, y: balloon.position.y });
+        Body.setVelocity(balloon, { x: px - balloon.position.x, y: py - balloon.position.y });
+        Body.setPosition(balloon, { x: px, y: py });
+        console.log(px);
     });
 
     Events.on(engine, 'afterUpdate', function() {
-        if (mouseConstraint.mouse.button === -1 && (rock.position.x > 415 || rock.position.y < 385)) {
+        if (mouseConstraint.mouse.button === -1 && (rock.position.y < 385)) {
             rock = Bodies.circle(400, 400, 15, rockOptions);
             World.add(engine.world, rock);
             elasticA.bodyB = rock;
@@ -134,7 +141,7 @@ Game.slingshot = function() {
     });
 
     // add mouse control
-    var mouse = Mouse.create(render.canvas),
+    let mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
             mouse: mouse,
             constraint: {
