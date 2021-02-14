@@ -262,6 +262,7 @@ document.addEventListener('keyup', (e) => {
     if (e.key = 'Tab') {
         header.style.display = 'none';
         menu.style.display = 'none';
+        gameWrapper.innerHTML = '';
         gameWrapper.style.display = 'block'; // Defined in game.js
         Game.slingshot();
     }
