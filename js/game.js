@@ -49,6 +49,7 @@ Game.slingshot = function() {
             collisionFilter: {group: -1},
             initialPosition: {x: x, y: y}, // custom property necessary for floatBalloon
             floatDirection: floatDirection,
+            label: 'balloon',
             render: {
                 sprite: {
                     texture: '../img/balloon.png',
@@ -59,7 +60,7 @@ Game.slingshot = function() {
         }),
         present = Bodies.rectangle(x, y + 80, 50, 50, {
             collisionFilter: {group: -1},
-            density: .9,
+            label: 'present',
             render: {
                 sprite: {
                     texture: '../img/present.png',
@@ -105,7 +106,7 @@ Game.slingshot = function() {
         rockOptions = { 
             density: 0.004,
             restitution: .5,
-            label: 'rock', // custom property to help identify later
+            label: 'rock',
             render: {
                 sprite: {
                     texture: '../img/rock.png',
@@ -138,18 +139,25 @@ Game.slingshot = function() {
         counterY = -1,
         ticks = 0
 
-
-    World.add(engine.world, [ground, slingshot, ...balloonPresents, elasticA, elasticB, rock]);
-    
-    const floatBalloon = (balloonPresent, x, y) => {
+    const floatBalloon = (balloonPresent) => {
         const balloon = balloonPresent.bodies[0];
         let px = balloon.initialPosition.x + 450 * Math.sin(counterX) * balloon.floatDirection,
             py = balloon.initialPosition.y + 10 * Math.sin(counterY) * balloon.floatDirection;
 
-        // Body is static so must manually update velocity for friction to work:
+        // Balloon is static so must manually update velocity for friction to work:
         Body.setVelocity(balloon, { x: px - balloon.position.x, y: py - balloon.position.y });
         Body.setPosition(balloon, { x: px, y: py });
     };
+
+    // Sets initial position to avoid present flailing:
+    const initBalloonPresent = (balloonPresent) => {
+        floatBalloon(balloonPresent);
+        const [balloon, present] = balloonPresent.bodies;
+        Body.setPosition(present, { x: balloon.position.x, y: balloon.position.y + 80 });
+    };
+
+    balloonPresents.forEach(bP => initBalloonPresent(bP));
+    World.add(engine.world, [ground, slingshot, ...balloonPresents, elasticA, elasticB, rock]);
 
     Events.on(engine, 'beforeUpdate', () => {
         counterX += .005;
@@ -170,7 +178,9 @@ Game.slingshot = function() {
         // Every 200 ticks, create new balloonPresent if less than 3 exist:
         if (ticks % 200 === 0 &&
             engine.world.composites.filter(c => c.label === 'balloonPresent').length < 3) {
-            World.add(engine.world, createBalloonPresent());
+            const newBalloonPresent = createBalloonPresent();
+            initBalloonPresent(newBalloonPresent);
+            World.add(engine.world, newBalloonPresent);
         }
     });
 

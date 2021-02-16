@@ -10,6 +10,7 @@ const dateTimeDiv = document.getElementById('date-time');
 const weatherDiv = document.getElementById('weather');
 const header = document.querySelector('header');
 const menu = document.querySelector('form');
+const slingshotIcon = document.getElementById('slingshot');
 
 const user = {
     coords: null,
@@ -216,10 +217,10 @@ async function startApp() {
     appRunning = setInterval(async () => {
         // If hour has changed, update music:
         let prevHour = user.dateTime.hour;
-        await setTimeAtCoords();
+        if (seconds % 60 === 0 ) await setTimeAtCoords();
         if (prevHour !== user.dateTime.hour) transitionMusic();
         // Every ten minutes, if weather has changed, update music;
-        if (seconds % 600 == 0) {
+        if (seconds % 600 === 0) {
             let prevWeather = user.weather.main;
             await getWeather();
             printWeather();
@@ -258,12 +259,8 @@ toggleMusicBtn.addEventListener('click', () => {
     }
 });
 
-document.addEventListener('keyup', (e) => {
-    if (e.key = 'Tab') {
-        header.style.display = 'none';
-        menu.style.display = 'none';
-        gameWrapper.innerHTML = '';
-        gameWrapper.style.display = 'block'; // Defined in game.js
-        Game.slingshot();
-    }
+slingshotIcon.addEventListener('click', () => {
+    gameWrapper.innerHTML = '';
+    document.body.classList.toggle('game-mode');
+    if (document.body.classList.contains('game-mode')) Game.slingshot();
 });

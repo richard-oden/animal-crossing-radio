@@ -62,6 +62,7 @@ body {
     background-size: cover;
     min-height: 100vh;
     margin: 0;
+    transition: all 3s;
 }
 
 header {
@@ -188,6 +189,25 @@ header > img {
 #game-wrapper > canvas {
     display: inline-block;
     padding: 0;
+}
+
+body.game-mode {
+    /* pan background up and zoom in */
+    background-position: top;
+    background-size: 200%;
+}
+
+body.game-mode > header,
+body.game-mode > .menu {
+    display: none;
+}
+
+body.game-mode > #game-wrapper {
+    display: block;
+}
+
+body.game-mode #slingshot > div {
+    display: block;
 }
 
 .music-controls {
@@ -339,6 +359,27 @@ header > img {
     grid-area: weather-desc;
     font-size: 1.2em;
 }
+
+#slingshot {
+    display: none;
+    background: #fcfbe8 url('img/slingshot-icon.png') no-repeat center;
+    border-radius: 100%;
+    background-size: 85%;
+    transition: all .3s;
+    cursor: pointer;
+}
+
+#slingshot > div {
+    display: none;
+    width: 25px; height: 25px;
+    position: absolute;
+    top: 6px; left: 6px;
+    background: #fcfbe8 url('img/equipped.png') no-repeat center;
+    border-radius: 100%;
+    background-size: 90%;
+    transition: all .3s;
+    border-radius: 100%;
+}
   
 @keyframes btn-background {
     0% {
@@ -459,6 +500,21 @@ header > img {
 
     #weather img {
         transform: translateY(-.4em);
+    }
+
+    #slingshot {
+        display: block;
+        position: fixed;
+        right: 10px; bottom: calc(var(--bottom-height) + 8px);
+        width: 80px; height: 80px;
+    }
+
+    #slingshot:hover {
+        width: 90px; height: 90px;
+    }
+
+    #slingshot:hover > div {
+        width: 28px; height: 28px;
     }
 }
 
