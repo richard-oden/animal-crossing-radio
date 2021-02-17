@@ -15,10 +15,10 @@ Game.slingshot = function() {
         Bodies = Matter.Bodies;
         Body = Matter.Body;
 
-    // create engine
+    // Create engine:
     let engine = Engine.create();
 
-    // create renderer
+    // Create renderer:
     let render = Render.create({
         element: gameWrapper,
         engine: engine,
@@ -34,11 +34,71 @@ Game.slingshot = function() {
 
     Render.run(render);
 
-    // create runner
+    // Create runner:
     let runner = Runner.create();
     Runner.run(runner, engine);
 
-    // add bodies
+    // Create bodies and other variables:
+    const ground = Bodies.rectangle(400, 625, 815, 50, { isStatic: true, render: { visible: false } });
+
+    // This is my work around for adding a static image:
+    const slingshot = Bodies.circle(410, 525, 1, {
+        isStatic: true,
+        render: { 
+            sprite: { 
+                texture: '../img/slingshot.png',
+                xScale: .4,
+                yScale: .4
+            } 
+        } 
+    });
+    const rockOptions = { 
+        density: 0.004,
+        restitution: .5,
+        label: 'rock',
+        render: {
+            sprite: {
+                texture: '../img/rock.png',
+                xScale: .17,
+                yScale: .17
+            }
+        } 
+    };
+    let rock = Bodies.circle(400, 445, 10, rockOptions);
+    const sideElasticRender = {
+        lineWidth: 8,
+        strokeStyle: '#67000d',
+        type: 'line'
+    };
+    const elastics = {
+        // Note: If left and right elastics are used to propel the rock, they will counteract
+        // each other, affecting the rock's trajectory. To fix this, I added an invisible 
+        // center elastic, which provides the actual driving force.
+
+        // Left and right are just for appearance:
+        left: Constraint.create({ 
+            pointA: { x: 350, y: 445 }, 
+            bodyB: rock, 
+            stiffness: 0.0001,
+            render: sideElasticRender
+        }),
+        right: Constraint.create({ 
+            pointA: { x: 455, y: 445 }, 
+            bodyB: rock, 
+            stiffness: 0.0001,
+            render: sideElasticRender
+        }),
+        // Center applies actual force:
+        center: Constraint.create({
+            pointA: { x: 400, y: 445 },
+            bodyB: rock,
+            stiffness: 0.02,
+            render: {
+                strokeStyle: 'transparent'
+            }
+        }),
+    };
+
     const createBalloonPresent = () => {
         const x = Math.random() * (760 - 40) + 40;
         const y = Math.random() * (300 - 60) + 60;
@@ -46,6 +106,7 @@ Game.slingshot = function() {
         
         const balloon = Bodies.circle(x, y, 30, {
             isStatic: true,
+            isSensor: true,
             collisionFilter: {group: -1},
             initialPosition: {x: x, y: y}, // custom property necessary for floatBalloon
             floatDirection: floatDirection,
@@ -86,58 +147,14 @@ Game.slingshot = function() {
             label: 'balloonPresent'
         });
     };
-
-    let ground = Bodies.rectangle(400, 625, 815, 50, { isStatic: true, render: { visible: false } }),
-        slingshot = Bodies.circle(410, 525, 1, {
-            isStatic: true,
-            render: { 
-                sprite: { 
-                    texture: '../img/slingshot.png',
-                    xScale: .4,
-                    yScale: .4
-                } 
-            } 
-        }),
-        balloonPresents = [
-            createBalloonPresent(),
-            createBalloonPresent(),
-            createBalloonPresent()
-        ],
-        rockOptions = { 
-            density: 0.004,
-            restitution: .5,
-            label: 'rock',
-            render: {
-                sprite: {
-                    texture: '../img/rock.png',
-                    xScale: .17,
-                    yScale: .17
-                }
-            } 
-        },
-        rock = Bodies.circle(400, 445, 10, rockOptions),
-        anchorA = { x: 350, y: 445 },
-        anchorB = { x: 455, y: 445 },
-        elasticRender = {
-            lineWidth: 8,
-            strokeStyle: '#67000d',
-            type: 'line'
-        },
-        elasticA = Constraint.create({ 
-            pointA: anchorA, 
-            bodyB: rock, 
-            stiffness: 0.02,
-            render: elasticRender
-        }),
-        elasticB = Constraint.create({ 
-            pointA: anchorB, 
-            bodyB: rock, 
-            stiffness: 0.02,
-            render: elasticRender
-        }),
-        counterX = -1,
+    const balloonPresents = [
+        createBalloonPresent(),
+        createBalloonPresent(),
+        createBalloonPresent()
+    ];
+    let counterX = -1,
         counterY = -1,
-        ticks = 0
+        ticks = 0;
 
     const floatBalloon = (balloonPresent) => {
         const balloon = balloonPresent.bodies[0];
@@ -156,13 +173,16 @@ Game.slingshot = function() {
         Body.setPosition(present, { x: balloon.position.x, y: balloon.position.y + 80 });
     };
 
+    // Add bodies:
     balloonPresents.forEach(bP => initBalloonPresent(bP));
-    World.add(engine.world, [ground, slingshot, ...balloonPresents, elasticA, elasticB, rock]);
+    World.add(engine.world, [ground, slingshot, ...balloonPresents, ...Object.values(elastics), rock]);
 
+    // Create event handlers:
     Events.on(engine, 'beforeUpdate', () => {
         counterX += .005;
         counterY += .04;
         ticks++;
+        // Manage balloon positions:
         engine.world.composites.filter(c => c.label === 'balloonPresent').forEach(bP => floatBalloon(bP));
     });
 
@@ -171,8 +191,9 @@ Game.slingshot = function() {
         if (mouseConstraint.mouse.button === -1 && (rock.position.y < 435)) {
             rock = Bodies.circle(400, 445, 10, rockOptions);
             World.add(engine.world, rock);
-            elasticA.bodyB = rock;
-            elasticB.bodyB = rock;
+            elastics.left.bodyB = rock;
+            elastics.right.bodyB = rock;
+            elastics.center.bodyB = rock;
         }
 
         // Every 200 ticks, create new balloonPresent if less than 3 exist:
@@ -184,7 +205,7 @@ Game.slingshot = function() {
         }
     });
 
-    Events.on(engine, 'collisionEnd', (event) => {
+    Events.on(engine, 'collisionStart', (event) => {
         const popBalloon = (balloonPresent) => {
             const present = balloonPresent.bodies[1];
             // Remove present from composite:
@@ -207,7 +228,7 @@ Game.slingshot = function() {
         });
     });
 
-    // add mouse control
+    // Add mouse control:
     let mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
             mouse: mouse,
@@ -221,16 +242,16 @@ Game.slingshot = function() {
 
     World.add(engine.world, mouseConstraint);
 
-    // keep the mouse in sync with rendering
+    // Keep the mouse in sync with rendering:
     render.mouse = mouse;
 
-    // fit the render viewport to the scene
+    // Fit the render viewport to the scene:
     Render.lookAt(render, {
         min: { x: 0, y: 0 },
         max: { x: 800, y: 600 }
     });
 
-    // context for MatterTools.Demo
+    // Context:
     return {
         engine: engine,
         runner: runner,
