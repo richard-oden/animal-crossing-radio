@@ -92,7 +92,7 @@ Game.slingshot = function() {
         center: Constraint.create({
             pointA: { x: 400, y: 445 },
             bodyB: rock,
-            stiffness: 0.02,
+            stiffness: 0.01,
             render: {
                 strokeStyle: 'transparent'
             }

@@ -1,5 +1,3 @@
-const openWeatherKey = config.OPEN_WEATHER_KEY;
-const googleKey = config.GOOGLE_KEY;
 const locationForm = document.querySelector('.menu');
 const detectBtn = document.getElementById('detect-btn');
 const locationInput = document.getElementById('manual-input');
@@ -66,15 +64,7 @@ async function getJSON(url) {
     }
 }
 
-let geocoder;
-function initGeocoder() {
-    geocoder = new google.maps.Geocoder();
-    detectBtn.addEventListener('click', enterLocation);
-    locationInput.addEventListener('change', detectLocation);
-}
-
-
-async function enterLocation() {
+async function detectLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             user.coords = [position.coords.latitude, position.coords.longitude];
@@ -87,36 +77,22 @@ async function enterLocation() {
     }
 }
 
-function detectLocation() {
+async function enterLocation() {
     const address = locationInput.value;
-        geocoder.geocode({ address: address }, (results, status) => {
-        if (status === "OK") {
-            user.coords = [results[0].geometry.location.lat(), results[0].geometry.location.lng()];
-        } else {
-            alert("Geocode was not successful for the following reason: " + status);
-        }
-    });
+    const locationJSON = await getJSON(`geocode/${address}`);
+    user.coords = [locationJSON.results[0].geometry.location.lat, locationJSON.results[0].geometry.location.lng];
 }
 
 async function populateInput() {
-    geocoder.geocode({ location: {lat: user.coords[0], lng: user.coords[1]} }, (results, status) => {
-        if (status === "OK") {
-            if (results[0]) {
-                locationInput.value = results[0].formatted_address;
-            } else {
-                alert("No results found");
-            }
-        } else {
-            alert("Geocoder failed due to: " + status);
-        }
-    });
+    const locationJSON = await getJSON(`reverse-geocode/${user.coords[0]},${user.coords[1]}`);
+    locationInput.value = locationJSON.results[0].formatted_address;
 }
 
-async function setTimeAtCoords()
+async function getTimeAtCoords()
 {
     const currentDate = new Date();
     const timestamp = Math.round(currentDate.getTime() / 1000);
-    const timezoneJSON = await getJSON(`https://maps.googleapis.com/maps/api/timezone/json?location=${user.coords[0]},${user.coords[1]}&timestamp=${timestamp}&key=${googleKey}`);
+    const timezoneJSON = await getJSON(`timezone/${user.coords[0]},${user.coords[1]}/${timestamp}`);
     if (timezoneJSON.status === "OK") {
         const timeOptions = {hour: 'numeric', minute: 'numeric', timeZone: timezoneJSON.timeZoneId};
 
@@ -131,7 +107,7 @@ async function setTimeAtCoords()
 }
 
 async function getWeather() {
-    const weatherJSON = await getJSON(`https://api.openweathermap.org/data/2.5/weather?lat=${user.coords[0]}&lon=${user.coords[1]}&appid=${openWeatherKey}`);
+    const weatherJSON = await getJSON(`weather/${user.coords[0]},${user.coords[1]}`);
     user.weather.main = weatherJSON.weather[0].main;
     user.weather.tempC = parseInt(weatherJSON.main.temp) - 273.15;
     user.weather.tempF = (user.weather.tempC * 9/5) + 32;
@@ -209,7 +185,7 @@ function printWeather() {
 
 async function startApp() {
     let seconds = 0;
-    await setTimeAtCoords();
+    await getTimeAtCoords();
     await getWeather();
     printWeather();
     const id = calcMusicId();
@@ -217,7 +193,7 @@ async function startApp() {
     appRunning = setInterval(async () => {
         // If hour has changed, update music:
         let prevHour = user.dateTime.hour;
-        if (seconds % 60 === 0 ) await setTimeAtCoords();
+        if (seconds % 60 === 0 ) await getTimeAtCoords();
         if (prevHour !== user.dateTime.hour) transitionMusic();
         // Every ten minutes, if weather has changed, update music;
         if (seconds % 600 === 0) {
@@ -230,6 +206,9 @@ async function startApp() {
         seconds++;
     }, 1000);
 }
+
+detectBtn.addEventListener('click', detectLocation);
+locationInput.addEventListener('change', enterLocation);
 
 locationForm.addEventListener('submit', (e) => {
     e.preventDefault();
