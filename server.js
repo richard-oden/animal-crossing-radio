@@ -9,7 +9,8 @@ const app = express();
 // Render static files
 app.use(express.static('public'));
 // Port website will run on
-app.listen(8080);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
 
 async function getJSON(url) {
     try {
