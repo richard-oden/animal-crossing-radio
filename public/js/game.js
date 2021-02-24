@@ -5,7 +5,6 @@ Game.slingshot = function() {
     const Engine = Matter.Engine,
         Render = Matter.Render,
         Runner = Matter.Runner,
-        Composites = Matter.Composites,
         Composite = Matter.Composite,
         Events = Matter.Events,
         Constraint = Matter.Constraint,
@@ -14,6 +13,7 @@ Game.slingshot = function() {
         World = Matter.World,
         Bodies = Matter.Bodies;
         Body = Matter.Body;
+        Bounds = Matter.Bounds;
 
     // Create engine:
     let engine = Engine.create();
@@ -229,7 +229,7 @@ Game.slingshot = function() {
     });
 
     // Add mouse control:
-    let mouse = Mouse.create(render.canvas),
+    const mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
             mouse: mouse,
             constraint: {
@@ -239,6 +239,21 @@ Game.slingshot = function() {
                 }
             }
         });
+    
+    Events.on(mouseConstraint, 'mouseup', () => {
+        const presents = engine.world.bodies.filter(b => b.label === 'present');
+        const items = ['30000bells', '1000bells', 'clay', 'iron', 'gold', 'furniture', 'glasses', 'hat', 'shirt', 'dress', 'bottoms', 'socks', 'shoes']
+        for (const present of presents) {
+            if (Bounds.contains(present.bounds, mouse.position)) {
+                const item = items[Math.floor(Math.random() * items.length)];
+                present.label = item;
+                present.render.sprite.texture = `../img/${item}.png`;
+                present.render.sprite.xScale = .6;
+                present.render.sprite.yScale = .6;
+                break;
+            }
+        }
+    });
 
     World.add(engine.world, mouseConstraint);
 
