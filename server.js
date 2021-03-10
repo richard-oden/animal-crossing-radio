@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 require('dotenv').config();
 const openWeatherKey = process.env.OPEN_WEATHER_KEY;
 const googleKey = process.env.GOOGLE_KEY;
-// Initialise Express
+// Initialize Express
 const app = express();
 // Render static files
 app.use(express.static('public'));
