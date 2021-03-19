@@ -126,10 +126,10 @@ function calcMusicId()
     }
 }
 
-async function getMusic(id)
+async function getMusic(type, id)
 {
     music.pause();
-    music.src = `https://acnhapi.com/v1/hourly/${id}`;
+    music.src = `https://acnhapi.com/v1/${type}/${id}`;
     music.play();
 }
 
@@ -157,7 +157,7 @@ function transitionMusic() {
         } else {
             clearInterval(fadeOut);
             const id = calcMusicId();
-            getMusic(id);
+            getMusic('hourly', id);
             fadeInMusic();
         }
     }, 200);
@@ -189,7 +189,7 @@ async function startApp() {
     await getWeather();
     printWeather();
     const id = calcMusicId();
-    getMusic(id);
+    getMusic('hourly', id);
     appRunning = setInterval(async () => {
         // If hour has changed, update music:
         let prevHour = user.dateTime.hour;
@@ -210,7 +210,7 @@ async function startApp() {
 detectBtn.addEventListener('click', detectLocation);
 locationInput.addEventListener('change', enterLocation);
 
-locationForm.addEventListener('submit', (e) => {
+locationForm.addEventListener('submit', e => {
     e.preventDefault();
     if (user.coords) {
         if (appRunning) {

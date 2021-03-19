@@ -210,6 +210,10 @@ body.game-mode #slingshot > div {
     display: block;
 }
 
+body.kk-mode {
+    background: black url('img/kk-slider-background.jpg') no-repeat center;
+}
+
 .music-controls {
     background-color: var(--background);
     box-shadow: 0 50px 0 0 var(--background); /* prevents bottom of div from showing during translateY*/
@@ -219,7 +223,7 @@ body.game-mode #slingshot > div {
     left: 0; bottom: 0;
     transition: var(--media-query-transition);
     display: grid;
-    grid-template-columns: minmax(120px, 1fr) 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: 136px 136px;
     justify-items: center;
     column-gap: 0;
@@ -229,16 +233,26 @@ body.game-mode #slingshot > div {
     transform: translateY(200%);
 }
 
-#toggle-music-btn {
+.music-controls .btns {
+    grid-column: 1 / 3;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    column-gap: 20px;
+    place-items: center;
+    transform: translateY(-48px);
+}
+
+.btns > button {
     border: none;
     outline: none;
-    background-color: var(--light);
     box-shadow: 0 0 0 20px var(--background);
     border-radius: 100%;
-    transform: translateY(-48px);
-    padding: 35px;
     cursor: pointer;
-    grid-column: 1 / 3;
+}
+
+#toggle-music-btn {
+    background-color: var(--light);
+    padding: 35px;
 }
 
 /* Pause and play symbol within button: */
@@ -264,6 +278,24 @@ body.game-mode #slingshot > div {
     border-width: 0 0 0 66px;
 }
 
+#kk-btn {
+    background: var(--light) url('../img/kk-slider-icon.png') no-repeat center;
+    background-size: 70%;
+    height: 110px; width: 110px;
+}
+
+#volume-btn {
+    color: var(--text);
+    background-color: var(--light);
+    font-size: 40px;
+    height: 84px; width: 84px;
+}
+
+#date-time,
+#weather {
+    transform: translateY(-36px);
+}
+
 #date-time {
     font-size: .7em;
     display: grid;
@@ -271,7 +303,6 @@ body.game-mode #slingshot > div {
     grid-template-areas:
         "time am-pm"
         "date-wrapper date-wrapper";
-    transform: translateY(-36px);
 }
 
 #date-time > time,
@@ -317,7 +348,6 @@ body.game-mode #slingshot > div {
     grid-template-areas:
         "temp-c slash temp-f"
         "img weather-desc weather-desc";
-    transform: translateY(-36px);
 }
 
 .temp {
@@ -341,7 +371,7 @@ body.game-mode #slingshot > div {
     grid-area: temp-f;
 }
 
-/* This prevents weird &deg; symbol spacing in RodinBokutoh: */
+/* This prevents weird &deg; symbol spacing in RodinBokutoh font: */
 .temp > span:first-child {
     font-family: sans-serif;
 }
@@ -451,7 +481,16 @@ body.game-mode #slingshot > div {
     }
 }
 
-@media (min-width: 630px) {
+@media (min-width: 800px) {
+    :root {
+        --bottom-height: 100px;
+    }
+
+    body {
+        padding-top: 0;
+        justify-content: center;
+    }
+
     header > img {
         width: 300px;
     }
@@ -462,26 +501,35 @@ body.game-mode #slingshot > div {
         border-width: 4px;
     }
 
+    .menu {
+        width: 70%;
+        grid-template-columns: 3fr 1fr;
+        grid-template-areas:
+            "detect-btn detect-btn"
+            "manual-input launch-btn";
+    }
+
     .menu > button,
     .menu > input {
         font-size: 1.5em;
         height: 70px;
     }
 
-    :root {
-        --bottom-height: 100px;
+    #detect-btn {
+        margin-bottom: 0;
     }
 
     .music-controls {
         padding: 0 40px;
-        grid-template-columns: repeat(3, minmax(200, 1fr));
+        grid-template-columns: 2fr 1fr 1fr;
         grid-template-rows: 136px;
         column-gap: 30px;
         justify-items: start;
     }
 
-    #toggle-music-btn {
+    .music-controls .btns {
         grid-column: 1 / 2;
+        place-items: end;
     }
 
     #date-time,
@@ -518,31 +566,13 @@ body.game-mode #slingshot > div {
     }
 }
 
-@media (min-width: 800px) {
-    body {
-        padding-top: 0;
-        justify-content: center;
-    }
-
-    .menu {
-        width: 70%;
-        grid-template-columns: 3fr 1fr;
-        grid-template-areas:
-            "detect-btn detect-btn"
-            "manual-input launch-btn";
-    }
-
-    #detect-btn {
-        margin-bottom: 0;
-    }
-}
-
 @media (min-width: 1000px) {
     .menu {
         width: 50%;
     }
 
     .music-controls {
-        grid-template-columns: 200px 200px 200px;
+        grid-template-columns: repeat(3, max-content);
+        column-gap: 60px;
     }
 }

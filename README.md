@@ -18,3 +18,7 @@ The app built using Node.js with Express and is hosted on Heroku [here](https://
 
 ### Additional Features
 - Create a web server with at least one route and connect to it from your application using ExpressJS
+
+## More credits
+- CSS based on designs by [Ananya Neogi](https://codepen.io/ananyaneogi/pen/Bgozrz) and [Sarah Fossheim](https://codepen.io/fossheim/pen/RwPeVKG)
+- Images sourced from https://pngtree.com/, https://nookipedia.com/, and Nintendo

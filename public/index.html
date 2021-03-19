@@ -14,11 +14,15 @@
     <form class="menu">
         <button id="detect-btn" type="button">Get my location</button>
         <input id="manual-input" type="text" placeholder="Or enter it here...">
-        <button id="launch-btn" type="submit">Go!</button>
+        <button id="launch-btn" type="submit">Start!</button>
     </form>
     <div id="game-wrapper"></div>
     <div class="music-controls collapsed">
-        <button id="toggle-music-btn" type="button"></button>
+        <div class="btns">
+            <button id="toggle-music-btn" type="button"></button>
+            <button id="kk-btn" type="button"></button>
+            <button id="volume-btn" class="fas fa-volume-up" type="button"></button>
+        </div>
         <div id="date-time"></div>
         <div id="weather"></div>
         <div id="slingshot">
@@ -26,6 +30,7 @@
         </div>
     </div>
 </body>
+<script src="https://kit.fontawesome.com/4752a3a04c.js" crossorigin="anonymous"></script>
 <script src="js/matter.min.js"></script>
 <script src="js/game.js"></script>
 <script src='js/app.js'></script>
