@@ -243,3 +243,5 @@ slingshotIcon.addEventListener('click', () => {
     document.body.classList.toggle('game-mode');
     if (document.body.classList.contains('game-mode')) Game.slingshot();
 });
+
+autocomplete(document.getElementById('kk-menu'), ['red', 'blue', 'green', 'orange', 'purple', 'yellow']);

@@ -11,10 +11,14 @@
         <img src="img/logo.png" alt="Animal Crossing Logo">
         <h1>RADIO</h1>
     </header>
-    <form class="menu">
+    <form id="main-menu" class="menu">
         <button id="detect-btn" type="button">Get my location</button>
         <input id="manual-input" type="text" placeholder="Or enter it here...">
         <button id="launch-btn" type="submit">Start!</button>
+    </form>
+    <form id="kk-menu" class="menu autocomplete" autocomplete='off'>
+        <input id="kk-input" type="text" placeholder="Search for a song...">
+        <button id="kk-launch-btn" type="submit">Start!</button>
     </form>
     <div id="game-wrapper"></div>
     <div class="music-controls collapsed">
@@ -33,5 +37,6 @@
 <script src="https://kit.fontawesome.com/4752a3a04c.js" crossorigin="anonymous"></script>
 <script src="js/matter.min.js"></script>
 <script src="js/game.js"></script>
+<script src="js/autocomplete.js"></script>
 <script src='js/app.js'></script>
 </html>

@@ -65,6 +65,10 @@ body {
     transition: all 2s;
 }
 
+/* ======================================
+   =============== HEADER =============== 
+   ====================================== */
+
 header {
     display: flex;
     flex-direction: column;
@@ -92,6 +96,10 @@ header > h1 {
 header > img {
     width: 200px;
 }
+
+/* ======================================
+   =============== MENUS ================ 
+   ====================================== */
   
 .menu {
     width: 80%;
@@ -127,22 +135,25 @@ header > img {
     color: var(--text);
 }
 
-#detect-btn {
-    grid-area: detect-btn;
-    margin-bottom: 20px;
-}
-
-#manual-input {
+.menu input {
     font-family: RodinBokutohProB, sans-serif;
     border: 3px solid var(--dark);
     padding: 6px 0 6px 12px;
     background-color: var(--accent);
     color: var(--text);
-    grid-area: manual-input;
+}
+
+#detect-btn {
+    grid-area: detect-btn;
+    margin-bottom: 20px;
 }
 
 #launch-btn {
     grid-area: launch-btn;
+}
+
+#manual-input {
+    grid-area: manual-input;
 }
 
 ::placeholder, /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -169,42 +180,13 @@ header > img {
     animation: btn-background 3s linear infinite;
 }
 
-#game-wrapper {
-    display: none;
-    width: 100%;
-    text-align: center;
-    position: fixed;
-    left: 0; bottom: calc(var(--bottom-height) - 10px);
-    transition: var(--media-query-transition);
-}
-
-#game-wrapper > canvas {
-    display: inline-block;
-    padding: 0;
-}
-
-body.game-mode {
-    /* pan background up and zoom in */
-    background-position: top;
-    background-size: 200%;
-}
-
-body.game-mode > header,
-body.game-mode > .menu {
-    display: none;
-}
-
-body.game-mode > #game-wrapper {
-    display: block;
-}
-
-body.game-mode #slingshot > div {
-    display: block;
-}
-
 body.kk-mode {
     background: black url('img/kk-slider-background.jpg') no-repeat center;
 }
+
+/* ======================================
+   =========== MUSIC CONTROLS =========== 
+   ====================================== */
 
 .music-controls {
     background-color: var(--background);
@@ -224,6 +206,8 @@ body.kk-mode {
 .music-controls.collapsed {
     transform: translateY(200%);
 }
+
+/* ----------- Buttons ----------- */
 
 .music-controls .btns {
     grid-column: 1 / 3;
@@ -283,6 +267,8 @@ body.kk-mode {
     height: 84px; width: 84px;
 }
 
+/* ----------- Date/Time ----------- */
+
 #date-time,
 #weather {
     transform: translateY(-36px);
@@ -333,6 +319,8 @@ body.kk-mode {
     padding: 2px 10px;
 }
 
+/* ----------- Weather ----------- */
+
 #weather {
     font-size: .7em;
     display: grid;
@@ -382,6 +370,43 @@ body.kk-mode {
     font-size: 1.2em;
 }
 
+/* ======================================
+   ============== MINIGAME ============== 
+   ====================================== */
+
+#game-wrapper {
+    display: none;
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    left: 0; bottom: calc(var(--bottom-height) - 10px);
+    transition: var(--media-query-transition);
+}
+
+#game-wrapper > canvas {
+    display: inline-block;
+    padding: 0;
+}
+
+body.game-mode {
+    /* pan background up and zoom in */
+    background-position: top;
+    background-size: 200%;
+}
+
+body.game-mode > header,
+body.game-mode > .menu {
+    display: none;
+}
+
+body.game-mode > #game-wrapper {
+    display: block;
+}
+
+body.game-mode #slingshot > div {
+    display: block;
+}
+
 #slingshot {
     display: none;
     background: #fcfbe8 url('img/slingshot-icon.png') no-repeat center;
@@ -401,7 +426,31 @@ body.kk-mode {
     background-size: 90%;
     transition: all .3s;
 }
-  
+
+/* ======================================
+   ============ AUTOCOMPLETE ============ 
+   ====================================== */
+
+.autocomplete {
+    position: relative;
+}
+
+.autocomplete-items {
+    position: absolute;
+    list-style-type: none;
+    top: 100%;
+    left: 0; right: 0;
+}
+
+.autocomplete-items li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* ======================================
+   ============= ANIMATIONS ============= 
+   ====================================== */
+
 @keyframes btn-background {
     0% {
         background-position: 0 0;
@@ -460,6 +509,10 @@ body.kk-mode {
         text-shadow: var(--neon-glow);
     }
 }
+
+/* ======================================
+   ============ MEDIA QUERIES =========== 
+   ====================================== */
 
 @media (min-width: 400px) {
     :root {
