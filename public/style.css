@@ -62,21 +62,18 @@ body {
     background-size: cover;
     min-height: 100vh;
     margin: 0;
-    transition: all 3s;
+    transition: all 2s;
 }
 
 header {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    overflow: visible;
     align-items: center;
     width: 40%;
     margin: 0 auto;
 }
 
 header > h1 {
-    display: inline-block;
     transform: translateY(-20px) rotate(4deg);
     border: 3.4px solid var(--neon);
     border-radius: 15px;
@@ -84,18 +81,15 @@ header > h1 {
     line-height: 80%;
     font-family: FinkHeavy, sans-serif;
     font-size: 1.65em;
-    text-align: center;
     box-shadow: var(--neon-glow), var(--neon-glow-inset);
     text-shadow: var(--neon-glow);
     color: var(--neon);
-    text-align: center;
     margin: 0 auto;
     animation: blink 12s infinite;
     -webkit-animation: blink 12s infinite;
 }
 
 header > img {
-    height: auto;
     width: 200px;
 }
   
@@ -104,11 +98,10 @@ header > img {
     padding: 15px;
     background-color: var(--background);
     border-radius: 30px;
-    margin: 0 auto 0 auto;
+    margin: 0 auto;
     box-shadow: 0 8px 6px -6px black;
     display: grid;
     gap: 10px;
-    grid-template-columns: 1fr;
     grid-template-areas:
         "detect-btn"
         "manual-input"
@@ -118,7 +111,6 @@ header > img {
 .menu button,
 .menu input {
     outline: none;
-    display: block;
     width: 100%;
     height: 50px;
     border-radius: 30px;
@@ -246,7 +238,7 @@ body.kk-mode {
     border: none;
     outline: none;
     box-shadow: 0 0 0 20px var(--background);
-    border-radius: 100%;
+    border-radius: 50%;
     cursor: pointer;
 }
 
@@ -267,7 +259,7 @@ body.kk-mode {
 
     /* play state */
     border-style: solid;
-	border-width: 35px 0 35px 66px;
+	border-width: 33px 0 33px 66px;
 }
 
 #toggle-music-btn.playing::after {
@@ -393,7 +385,7 @@ body.kk-mode {
 #slingshot {
     display: none;
     background: #fcfbe8 url('img/slingshot-icon.png') no-repeat center;
-    border-radius: 100%;
+    border-radius: 50%;
     background-size: 85%;
     transition: all .3s;
     cursor: pointer;
@@ -405,10 +397,9 @@ body.kk-mode {
     position: absolute;
     top: 6px; left: 6px;
     background: #fcfbe8 url('img/equipped.png') no-repeat center;
-    border-radius: 100%;
+    border-radius: 50%;
     background-size: 90%;
     transition: all .3s;
-    border-radius: 100%;
 }
   
 @keyframes btn-background {
