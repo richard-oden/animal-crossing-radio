@@ -17,7 +17,7 @@ function autocomplete(input, arr) {
     // Remove active class from all items in list:
     function removeActive(list) {
         for (let item of list) {
-            item.classList.remove("autocomplete-active");
+            item.classList.remove("autocomplete-focus");
         }
     }
 
@@ -29,26 +29,27 @@ function autocomplete(input, arr) {
             if (currentFocus >= list.length) currentFocus = 0;
             if (currentFocus < 0) currentFocus = (list.length - 1);
 
-            list[currentFocus].classList.add("autocomplete-active");
+            list[currentFocus].classList.add("autocomplete-focus");
         }
     }
 
     // Display results when user starts typing:
     input.addEventListener("input", () => {
-        let val = this.value;
         closeAllLists();
-        if (val) {
+        if (input.value) {
             currentFocus = -1;
-            let itemsHTML = `<ul id='${this.id + "autocomplete-list"}' class='autocomplete-items'>`;
-            arr.filter(item => item.toLowerCase().includes(val.toLowerCase()))
-                .forEach(matchingItem => itemsHTML += `<li>${matchingItem}</li>`);
-            itemsHTML += '</ul>';
-            this.parentNode.innerHTML += itemsHTML;
+            const list = document.createElement('ul');
+            list.id = input.id + '-autocomplete-list';
+            list.className = 'autocomplete-items';
+            const matchingItems = arr.filter(item => item.toLowerCase().includes(input.value.toLowerCase()));
+            matchingItems.length === 0 ? list.innerHTML += '<div class="result">No results found. :(</div>' :
+                matchingItems.forEach(matchingItem => list.innerHTML += `<li class="result">${matchingItem}</li>`);
+            input.parentNode.appendChild(list);
         }
     });
 
     // Change input value when item is clicked:
-    input.addEventListener('click', event => {
+    input.parentNode.addEventListener('click', event => {
         if (event.target.tagName == 'LI') {
             input.value = event.target.textContent;
             closeAllLists();
@@ -57,17 +58,19 @@ function autocomplete(input, arr) {
 
     // Navigate items with keyboard:
     input.addEventListener("keydown", event => {
-        console.log(this);
-        var items = document.getElementById(this.id + "autocomplete-list").children;
-        if (event.key == 'ArrowDown') {
-            currentFocus++;
-            addActive(items);
-        } else if (event.key == 'ArrowUp') {
-            currentFocus--;
-            addActive(items);
-        } else if (event.key == 'Enter') {
-            event.preventDefault();
-            if (currentFocus > -1 && items) items[currentFocus].click();
+        var list = document.getElementById(input.id + "-autocomplete-list");
+        if (list) {
+            items = list.children;
+            if (event.key == 'ArrowDown') {
+                currentFocus++;
+                addActive(items);
+            } else if (event.key == 'ArrowUp') {
+                currentFocus--;
+                addActive(items);
+            } else if (event.key == 'Enter') {
+                event.preventDefault();
+                if (currentFocus > -1 && items) items[currentFocus].click();
+            }
         }
     });
 
