@@ -56,6 +56,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    align-items: center;
     padding-top: 20px;
     background: var(--light) url('img/background.jpg') no-repeat center;
     color: var(--text);
@@ -74,8 +75,7 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 40%;
-    margin: 0 auto;
+    width: 40%; height: min-content;
 }
 
 header > h1 {
@@ -89,7 +89,6 @@ header > h1 {
     box-shadow: var(--neon-glow), var(--neon-glow-inset);
     text-shadow: var(--neon-glow);
     color: var(--neon);
-    margin: 0 auto;
     animation: blink 12s infinite;
     -webkit-animation: blink 12s infinite;
 }
@@ -109,10 +108,9 @@ header > img {
 }
 
 .menu {
-    width: 80%;
+    width: 80%; height: min-content;
     padding: 15px;
     background-color: var(--background);
-    margin: 0 auto;
     box-shadow: 0 8px 6px -6px black;
     display: grid;
     gap: 10px;
@@ -123,6 +121,11 @@ header > img {
         "detect-btn"
         "manual-input"
         "launch-btn";
+}
+
+#kk-menu {
+    display: none;
+    grid-template-columns: 3fr 1fr;
 }
   
 .menu button,
@@ -187,10 +190,6 @@ header > img {
         var(--dark) 90% 100%
     );
     animation: btn-background 3s linear infinite;
-}
-
-body.kk-mode {
-    background: black url('img/kk-slider-background.jpg') no-repeat center;
 }
 
 /* ======================================
@@ -380,6 +379,39 @@ body.kk-mode {
 }
 
 /* ======================================
+   ============= K.K. MODE ============== 
+   ====================================== */
+    body.kk-mode {
+        background: black url('img/kk-slider-background.jpg') no-repeat center 0;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 20px 20px 0 20px;
+    }
+
+    body.kk-mode header {
+        width: 150px;
+        margin-right: 20px;
+    }
+
+    body.kk-mode header h1 {
+        font-size: 1.2rem;
+        padding: 7px;
+    }
+
+    body.kk-mode header img {
+        width: 150px;
+    }
+
+    body.kk-mode #main-menu {
+        display: none;
+    }
+
+    body.kk-mode #kk-menu {
+        display: grid;
+    }
+
+/* ======================================
    ============== MINIGAME ============== 
    ====================================== */
 
@@ -555,7 +587,7 @@ body.game-mode #slingshot > div {
     }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1000px) {
     :root {
         --bottom-height: 100px;
         --menu-element-height: 70px;
@@ -563,6 +595,10 @@ body.game-mode #slingshot > div {
 
     body {
         padding-top: 0;
+        justify-content: center;
+    }
+
+    body.kk-mode {
         justify-content: center;
     }
 
@@ -643,7 +679,7 @@ body.game-mode #slingshot > div {
     }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
     .menu {
         width: 50%;
     }

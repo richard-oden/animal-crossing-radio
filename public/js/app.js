@@ -4,6 +4,7 @@ const locationInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
 const musicControls = document.querySelector('.music-controls');
 const toggleMusicBtn = document.getElementById('toggle-music-btn');
+const kkBtn = document.getElementById('kk-btn');
 const dateTimeDiv = document.getElementById('date-time');
 const weatherDiv = document.getElementById('weather');
 const header = document.querySelector('header');
@@ -236,6 +237,10 @@ toggleMusicBtn.addEventListener('click', () => {
         music.pause();
         clearInterval(appRunning);
     }
+});
+
+kkBtn.addEventListener('click', () => {
+    document.body.classList.toggle('kk-mode');
 });
 
 slingshotIcon.addEventListener('click', () => {
