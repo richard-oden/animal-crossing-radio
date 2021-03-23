@@ -79,7 +79,7 @@ header {
 }
 
 header > h1 {
-    transform: translateY(-20px) rotate(4deg);
+    transform: translateY(-40px) rotate(4deg);
     border: 3.4px solid var(--neon);
     border-radius: 15px;
     padding: 7px;
@@ -262,7 +262,7 @@ header > img {
     border-width: 0 0 0 66px;
 }
 
-#kk-btn {
+#toggle-kk-btn {
     background: var(--light) url('../img/kk-slider-icon.png') no-repeat center;
     background-size: 70%;
     height: 110px; width: 110px;
@@ -481,6 +481,13 @@ body.game-mode #slingshot > div {
     top: 0; left: 0; right: 0;
     margin: 0; padding: 0;
     list-style-type: none;
+    max-height: 60vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+    width: 0;
 }
 
 .autocomplete > input {
@@ -685,7 +692,8 @@ body.game-mode #slingshot > div {
     }
 
     .music-controls {
-        grid-template-columns: repeat(3, max-content);
+        grid-template-columns: repeat(3, 1fr);
+        place-items: start center;
         column-gap: 60px;
     }
 }

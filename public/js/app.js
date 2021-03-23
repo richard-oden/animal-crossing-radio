@@ -1,14 +1,16 @@
-const locationForm = document.querySelector('.menu');
+const mainMenu = document.getElementById('main-menu');
+const kkMenu = document.getElementById('kk-menu');
 const detectBtn = document.getElementById('detect-btn');
 const locationInput = document.getElementById('manual-input');
 const launchBtn = document.getElementById('launch-btn');
+const kkInput = document.getElementById('kk-input');
+const kkLaunchBtn = document.getElementById('kk-launch-btn');
 const musicControls = document.querySelector('.music-controls');
 const toggleMusicBtn = document.getElementById('toggle-music-btn');
-const kkBtn = document.getElementById('kk-btn');
+const toggleKKBtn = document.getElementById('toggle-kk-btn');
 const dateTimeDiv = document.getElementById('date-time');
 const weatherDiv = document.getElementById('weather');
 const header = document.querySelector('header');
-const menu = document.querySelector('form');
 const slingshotIcon = document.getElementById('slingshot');
 
 const user = {
@@ -89,8 +91,7 @@ async function populateInput() {
     locationInput.value = locationJSON.results[0].formatted_address;
 }
 
-async function getTimeAtCoords()
-{
+async function getTimeAtCoords() {
     const currentDate = new Date();
     const timestamp = Math.round(currentDate.getTime() / 1000);
     const timezoneJSON = await getJSON(`timezone/${user.coords[0]},${user.coords[1]}/${timestamp}`);
@@ -115,8 +116,7 @@ async function getWeather() {
     user.weather.imgURL = `http://openweathermap.org/img/w/${weatherJSON.weather[0].icon}.png`;
 }
 
-function calcMusicId()
-{
+function calcHourlyMusicId() {
     let id = (user.dateTime.hour * 3) + 1;
     if (['Thunderstorm', 'Drizzle', 'Rain'].includes(user.weather.main)) {
         return id;
@@ -127,8 +127,12 @@ function calcMusicId()
     }
 }
 
-async function getMusic(type, id)
-{
+async function getAllKKSongNames() {
+    const songNames = Object.values(await getJSON('http://acnhapi.com/v1/songs')).map(s => s.name['name-USen']);
+    autocomplete(document.getElementById('kk-input'), songNames);
+}
+
+async function getMusic(type, id) {
     music.pause();
     music.src = `https://acnhapi.com/v1/${type}/${id}`;
     music.play();
@@ -157,7 +161,7 @@ function transitionMusic() {
             music.volume = volumeRounded;
         } else {
             clearInterval(fadeOut);
-            const id = calcMusicId();
+            const id = calcHourlyMusicId();
             getMusic('hourly', id);
             fadeInMusic();
         }
@@ -189,7 +193,7 @@ async function startApp() {
     await getTimeAtCoords();
     await getWeather();
     printWeather();
-    const id = calcMusicId();
+    const id = calcHourlyMusicId();
     getMusic('hourly', id);
     appRunning = setInterval(async () => {
         // If hour has changed, update music:
@@ -211,8 +215,8 @@ async function startApp() {
 detectBtn.addEventListener('click', detectLocation);
 locationInput.addEventListener('change', enterLocation);
 
-locationForm.addEventListener('submit', e => {
-    e.preventDefault();
+mainMenu.addEventListener('submit', event => {
+    event.preventDefault();
     if (user.coords) {
         if (appRunning) {
             clearInterval(appRunning);
@@ -229,6 +233,13 @@ locationForm.addEventListener('submit', e => {
     }
 });
 
+kkMenu.addEventListener('submit', async event => {
+    event.preventDefault();
+    const song = Object.values(await getJSON('http://acnhapi.com/v1/songs'))
+        .find(s => s.name['name-USen'] == kkInput.value);
+    getMusic('music', song.id);
+});
+
 toggleMusicBtn.addEventListener('click', () => {
     toggleMusicBtn.classList.toggle("playing");
     if (toggleMusicBtn.classList.contains("playing")) {
@@ -239,14 +250,20 @@ toggleMusicBtn.addEventListener('click', () => {
     }
 });
 
-kkBtn.addEventListener('click', () => {
+toggleKKBtn.addEventListener('click', () => {
     document.body.classList.toggle('kk-mode');
+    if (document.body.classList.contains('kk-mode')) {
+        document.body.classList.remove('game-mode');
+    }
 });
 
 slingshotIcon.addEventListener('click', () => {
     gameWrapper.innerHTML = '';
     document.body.classList.toggle('game-mode');
-    if (document.body.classList.contains('game-mode')) Game.slingshot();
+    if (document.body.classList.contains('game-mode')) {
+        document.body.classList.remove('kk-mode');
+        Game.slingshot();
+    }
 });
 
-autocomplete(document.getElementById('kk-input'), ['red', 'blue', 'green', 'orange', 'purple', 'yellow']);
+getAllKKSongNames();

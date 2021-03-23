@@ -14,17 +14,17 @@ function autocomplete(input, arr) {
         }
     }
 
-    // Remove active class from all items in list:
-    function removeActive(list) {
+    // Remove focus class from all items in list:
+    function removeFocus(list) {
         for (let item of list) {
             item.classList.remove("autocomplete-focus");
         }
     }
 
-    // Add active class:
-    function addActive(list) {
+    // Add focus class:
+    function addFocus(list) {
         if (list) {
-            removeActive(list);
+            removeFocus(list);
             // Bounds checking:
             if (currentFocus >= list.length) currentFocus = 0;
             if (currentFocus < 0) currentFocus = (list.length - 1);
@@ -63,10 +63,10 @@ function autocomplete(input, arr) {
             items = list.children;
             if (event.key == 'ArrowDown') {
                 currentFocus++;
-                addActive(items);
+                addFocus(items);
             } else if (event.key == 'ArrowUp') {
                 currentFocus--;
-                addActive(items);
+                addFocus(items);
             } else if (event.key == 'Enter') {
                 event.preventDefault();
                 if (currentFocus > -1 && items) items[currentFocus].click();

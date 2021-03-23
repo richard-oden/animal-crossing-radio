@@ -13,12 +13,12 @@
     </header>
     <form id="main-menu" class="menu">
         <button id="detect-btn" type="button">Get my location</button>
-        <input id="manual-input" type="text" placeholder="Or enter it here...">
+        <input id="manual-input" type="text" placeholder="Or enter it here..." required>
         <button id="launch-btn" type="submit">Start!</button>
     </form>
     <form id="kk-menu" class="menu" autocomplete='off'>
         <div class='autocomplete'>
-            <input id="kk-input" type="text" placeholder="Search for a song...">
+            <input id="kk-input" type="text" placeholder="Search for a song..." required>
         </div>
         <button id="kk-launch-btn" type="submit">Start!</button>
     </form>
@@ -26,7 +26,7 @@
     <div class="music-controls collapsed">
         <div class="btns">
             <button id="toggle-music-btn" type="button"></button>
-            <button id="kk-btn" type="button"></button>
+            <button id="toggle-kk-btn" type="button"></button>
             <button id="volume-btn" class="fas fa-volume-up" type="button"></button>
         </div>
         <div id="date-time"></div>
