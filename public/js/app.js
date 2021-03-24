@@ -32,6 +32,7 @@ const user = {
         get hour() {
             return this._hour
         },
+
         set hour(value) {
             if (value === 24) {
                 this._hour = 0;
@@ -43,6 +44,7 @@ const user = {
         get timeString() {
             return this._timeString;
         },
+
         set timeString(value) {
             const valueArr = value.split(" ");
             if (valueArr.length === 2) {
@@ -56,7 +58,10 @@ const user = {
 }
 let music = new Audio();
 music.loop = true;
-let appRunning;
+let seconds = 0;
+let trackingTimeAndWeather;
+let trackingHourlyMusic;
+let updateHourlyMusic = false;
 
 async function getJSON(url) {
     try {
@@ -94,17 +99,17 @@ async function populateInput() {
 async function getTimeAtCoords() {
     const currentDate = new Date();
     const timestamp = Math.round(currentDate.getTime() / 1000);
-    const timezoneJSON = await getJSON(`timezone/${user.coords[0]},${user.coords[1]}/${timestamp}`);
-    if (timezoneJSON.status === "OK") {
-        const timeOptions = {hour: 'numeric', minute: 'numeric', timeZone: timezoneJSON.timeZoneId};
+    const timeZoneJSON = await getJSON(`timezone/${user.coords[0]},${user.coords[1]}/${timestamp}`);
+    if (timeZoneJSON.status === "OK") {
+        const timeOptions = {hour: 'numeric', minute: 'numeric', timeZone: timeZoneJSON.timeZoneId};
 
         user.dateTime.timeString = Intl.DateTimeFormat(navigator.language, timeOptions).format(currentDate);
-        user.dateTime.date = Intl.DateTimeFormat(navigator.language, {month: 'long', day: 'numeric', timeZone: timezoneJSON.timeZoneId}).format(currentDate);
-        user.dateTime.weekday = Intl.DateTimeFormat(navigator.language, {weekday: 'short', timeZone: timezoneJSON.timeZoneId}).format(currentDate);
-        user.dateTime.hour = parseInt(Intl.DateTimeFormat('en-US', {hour: 'numeric', hour12: false, timeZone: timezoneJSON.timeZoneId}).format(currentDate));
-        user.dateTime.iso = currentDate.toLocaleString(navigator.language, {timeZone: timezoneJSON.timeZoneId, timeZoneName: "short"});
+        user.dateTime.date = Intl.DateTimeFormat(navigator.language, {month: 'long', day: 'numeric', timeZone: timeZoneJSON.timeZoneId}).format(currentDate);
+        user.dateTime.weekday = Intl.DateTimeFormat(navigator.language, {weekday: 'short', timeZone: timeZoneJSON.timeZoneId}).format(currentDate);
+        user.dateTime.hour = parseInt(Intl.DateTimeFormat('en-US', {hour: 'numeric', hour12: false, timeZone: timeZoneJSON.timeZoneId}).format(currentDate));
+        user.dateTime.iso = currentDate.toLocaleString(navigator.language, {timeZone: timeZoneJSON.timeZoneId, timeZoneName: "short"});
     } else {
-        alert("Timezone API request failed due to: " + timezoneJSON.status);
+        alert("Timezone API request failed due to: " + timeZoneJSON.status);
     }
 }
 
@@ -188,46 +193,51 @@ function printWeather() {
     `;
 }
 
-async function startApp() {
-    let seconds = 0;
-    await getTimeAtCoords();
-    await getWeather();
-    printWeather();
-    const id = calcHourlyMusicId();
-    getMusic('hourly', id);
-    appRunning = setInterval(async () => {
-        // If hour has changed, update music:
+async function trackTimeAndWeather() {
+    trackingTimeAndWeather = setInterval(async () => {
         let prevHour = user.dateTime.hour;
-        if (seconds % 60 === 0 ) await getTimeAtCoords();
-        if (prevHour !== user.dateTime.hour) transitionMusic();
-        // Every ten minutes, if weather has changed, update music;
+        let prevWeather = user.weather.main;
+        if (seconds % 60 === 0) {
+            await getTimeAtCoords();
+            printTime();
+        }
         if (seconds % 600 === 0) {
-            let prevWeather = user.weather.main;
             await getWeather();
             printWeather();
-            if (prevWeather !== user.weather.main) transitionMusic();
         }
-        printTime();
+        if (prevHour !== user.dateTime.hour || prevWeather !== user.weather.main) {
+            updateHourlyMusic = true;
+        }
         seconds++;
+    }, 1000);
+}
+
+function trackHourlyMusic() {
+    trackingHourlyMusic = setInterval(async () => {
+        if (updateHourlyMusic) {
+            transitionMusic();
+            updateHourlyMusic = false;
+        }
     }, 1000);
 }
 
 detectBtn.addEventListener('click', detectLocation);
 locationInput.addEventListener('change', enterLocation);
 
-mainMenu.addEventListener('submit', event => {
+mainMenu.addEventListener('submit', async event => {
     event.preventDefault();
     if (user.coords) {
-        if (appRunning) {
-            clearInterval(appRunning);
-        }
-        startApp();
-        if (musicControls.classList.contains("collapsed")) {
-            musicControls.classList.remove("collapsed");
-        }
-        if (!toggleMusicBtn.classList.contains("playing")) {
-            toggleMusicBtn.classList.add("playing");
-        }
+        await getTimeAtCoords();
+        await getWeather();
+        printTime();
+        printWeather();
+        const id = calcHourlyMusicId();
+        getMusic('hourly', id);
+
+        if (!trackingTimeAndWeather) trackTimeAndWeather();
+        if (!trackingHourlyMusic) trackHourlyMusic();
+        musicControls.classList.remove("collapsed");
+        toggleMusicBtn.classList.add("playing");
     } else {
         alert('Location not found!');
     }
@@ -243,10 +253,11 @@ kkMenu.addEventListener('submit', async event => {
 toggleMusicBtn.addEventListener('click', () => {
     toggleMusicBtn.classList.toggle("playing");
     if (toggleMusicBtn.classList.contains("playing")) {
-        startApp();
+        music.play();
+        trackHourlyMusic();
     } else {
         music.pause();
-        clearInterval(appRunning);
+        clearInterval(trackingHourlyMusic);
     }
 });
 
