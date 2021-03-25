@@ -74,9 +74,9 @@ async function getJSON(url) {
 
 async function detectLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
+        navigator.geolocation.getCurrentPosition(async position => {
             user.coords = [position.coords.latitude, position.coords.longitude];
-            populateInput();
+            await populateInput();
         }, () => {
             console.log('Unable to retrive location.');
         });
@@ -143,7 +143,7 @@ async function getMusic(type, id) {
     music.play();
 }
 
-function fadeInMusic () {
+function fadeInMusic() {
     music.volume = 0;
     const fadeIn = setInterval(() => {
         let volumeRounded = Math.round(music.volume * 100) / 100;
@@ -158,38 +158,56 @@ function fadeInMusic () {
     }, 200);
 }
 
-function transitionMusic() {
+function fadeOutMusic() {
     const fadeOut = setInterval(() => {
         let volumeRounded = Math.round(music.volume * 100) / 100;
-        if (volumeRounded > 0) {
-            volumeRounded -= 0.05
-            music.volume = volumeRounded;
-        } else {
+        volumeRounded -= 0.05;
+        if (volumeRounded <= 0) {
+            volumeRounded = 0;
+            // Dispatches custom event when music is faded out:
+            document.dispatchEvent(new CustomEvent('fadedout'));
             clearInterval(fadeOut);
-            const id = calcHourlyMusicId();
-            getMusic('hourly', id);
-            fadeInMusic();
         }
+        music.volume = volumeRounded;
     }, 200);
+}
+
+function transitionMusic(getNewMusic) {
+    if (!music.paused) {
+        // Creates a one-time eventlistener that fires when music is faded out:
+        const transitionHandler = () => {
+            getNewMusic();
+            fadeInMusic();
+            document.removeEventListener('fadedout', transitionHandler);
+        };
+        document.addEventListener('fadedout', transitionHandler);
+        fadeOutMusic();
+    } else {
+        getNewMusic();
+        fadeInMusic();
+    }
 }
 
 function printTime() {
     dateTimeDiv.innerHTML =
-    `<time datetime="${user.dateTime.iso}">${user.dateTime.timeString}</time>
-    <span id="am-pm">${user.dateTime.amPM}</span>
-    <div id="date-wrapper">
-        <span id="date">${user.dateTime.date}</span>
-        <span id="weekday">${user.dateTime.weekday}.</span>
-    </div>`;
+    `
+        <time datetime="${user.dateTime.iso}">${user.dateTime.timeString}</time>
+        <span id="am-pm">${user.dateTime.amPM}</span>
+        <div id="date-wrapper">
+            <span id="date">${user.dateTime.date}</span>
+            <span id="weekday">${user.dateTime.weekday}.</span>
+        </div>
+    `;
 }
 
 function printWeather() {
     weatherDiv.innerHTML =
-    `<div class="temp">${Math.round(user.weather.tempC)}<span>&deg;</span><span>C</span></div>
-    <div class="temp">/</div>
-    <div class="temp">${Math.round(user.weather.tempF)}<span>&deg;</span><span>F</span></div>
-    <img src="${user.weather.imgURL}" alt="${user.weather.main}">
-    <div id="weather-desc">${user.weather.main}</div>
+    `
+        <div class="temp">${Math.round(user.weather.tempC)}<span>&deg;</span><span>C</span></div>
+        <div class="temp">/</div>
+        <div class="temp">${Math.round(user.weather.tempF)}<span>&deg;</span><span>F</span></div>
+        <img src="${user.weather.imgURL}" alt="${user.weather.main}">
+        <div id="weather-desc">${user.weather.main}</div>
     `;
 }
 
@@ -215,7 +233,8 @@ async function trackTimeAndWeather() {
 function trackHourlyMusic() {
     trackingHourlyMusic = setInterval(async () => {
         if (updateHourlyMusic) {
-            transitionMusic();
+            const id = calcHourlyMusicId();
+            transitionMusic(() => {getMusic('hourly', id)});
             updateHourlyMusic = false;
         }
     }, 1000);
@@ -232,7 +251,7 @@ mainMenu.addEventListener('submit', async event => {
         printTime();
         printWeather();
         const id = calcHourlyMusicId();
-        getMusic('hourly', id);
+        transitionMusic(() => {getMusic('hourly', id)});
 
         if (!trackingTimeAndWeather) trackTimeAndWeather();
         if (!trackingHourlyMusic) trackHourlyMusic();
@@ -247,14 +266,14 @@ kkMenu.addEventListener('submit', async event => {
     event.preventDefault();
     const song = Object.values(await getJSON('http://acnhapi.com/v1/songs'))
         .find(s => s.name['name-USen'] == kkInput.value);
-    getMusic('music', song.id);
+    transitionMusic(() => {getMusic('music', song.id)});
 });
 
 toggleMusicBtn.addEventListener('click', () => {
     toggleMusicBtn.classList.toggle("playing");
     if (toggleMusicBtn.classList.contains("playing")) {
         music.play();
-        trackHourlyMusic();
+        if (!document.body.classList.contains('kk-mode')) trackHourlyMusic();
     } else {
         music.pause();
         clearInterval(trackingHourlyMusic);
@@ -264,6 +283,7 @@ toggleMusicBtn.addEventListener('click', () => {
 toggleKKBtn.addEventListener('click', () => {
     document.body.classList.toggle('kk-mode');
     if (document.body.classList.contains('kk-mode')) {
+        clearInterval(trackingHourlyMusic);
         document.body.classList.remove('game-mode');
     }
 });
@@ -277,4 +297,4 @@ slingshotIcon.addEventListener('click', () => {
     }
 });
 
-getAllKKSongNames();
+document.addEventListener('DOMContentLoaded', getAllKKSongNames);
