@@ -172,18 +172,18 @@ function fadeOutMusic() {
     }, 200);
 }
 
-function transitionMusic(getNewMusic) {
+async function transitionMusic(getNewMusic) {
     if (!music.paused) {
         // Creates a one-time eventlistener that fires when music is faded out:
-        const transitionHandler = () => {
-            getNewMusic();
+        const transitionHandler = async () => {
+            await getNewMusic();
             fadeInMusic();
             document.removeEventListener('fadedout', transitionHandler);
         };
         document.addEventListener('fadedout', transitionHandler);
         fadeOutMusic();
     } else {
-        getNewMusic();
+        await getNewMusic();
         fadeInMusic();
     }
 }
@@ -267,6 +267,7 @@ kkMenu.addEventListener('submit', async event => {
     const song = Object.values(await getJSON('http://acnhapi.com/v1/songs'))
         .find(s => s.name['name-USen'] == kkInput.value);
     transitionMusic(() => {getMusic('music', song.id)});
+    toggleMusicBtn.classList.add("playing");
 });
 
 toggleMusicBtn.addEventListener('click', () => {

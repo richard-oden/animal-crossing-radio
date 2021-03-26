@@ -24,7 +24,7 @@
         inset 0 0 18px #ff4800, 
         inset 0 0 40px #ff5100;
     --menu-element-height: 50px;
-    --bottom-height: 160px;
+    --bottom-height: 200px;
     --media-query-transition: all 1s cubic-bezier(.28,-0.33,.27,1.7);
 }
 
@@ -75,11 +75,10 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 40%; height: min-content;
 }
 
 header > h1 {
-    transform: translateY(-40px) rotate(4deg);
+    transform: translateY(-1.25em) rotate(4deg);
     border: 3.4px solid var(--neon);
     border-radius: 15px;
     padding: 7px;
@@ -117,6 +116,7 @@ header > img {
 }
 
 #main-menu {
+    transform: translateY(-2em);
     grid-template-areas:
         "detect-btn"
         "manual-input"
@@ -279,11 +279,10 @@ header > img {
 
 #date-time,
 #weather {
-    transform: translateY(-36px);
+    transform: translateY(-24px);
 }
 
 #date-time {
-    font-size: .7em;
     display: grid;
     grid-template-rows: 2em;
     grid-template-areas:
@@ -330,7 +329,6 @@ header > img {
 /* ----------- Weather ----------- */
 
 #weather {
-    font-size: .7em;
     display: grid;
     grid-template-rows: 2em;
     grid-template-areas:
@@ -583,17 +581,6 @@ body.game-mode #slingshot > div {
    ============ MEDIA QUERIES =========== 
    ====================================== */
 
-@media (min-width: 400px) {
-    :root {
-        --bottom-height: 180px;
-    }
-
-    #date-time,
-    #weather {
-        font-size: 1em;
-    }
-}
-
 @media (min-width: 1000px) {
     :root {
         --bottom-height: 100px;
@@ -610,7 +597,7 @@ body.game-mode #slingshot > div {
     }
 
     header > img {
-        width: 300px;
+        width: 400px;
     }
 
     header > h1 {
