@@ -25,7 +25,7 @@
         inset 0 0 40px #ff5100;
     --menu-element-height: 50px;
     --bottom-height: 200px;
-    --media-query-transition: all 1s cubic-bezier(.28,-0.33,.27,1.7);
+    --rebound-transition: all 1s cubic-bezier(.28,-0.33,.27,1.7);
 }
 
 @font-face {
@@ -203,7 +203,7 @@ header > img {
     width: 100%; height: var(--bottom-height);
     position: fixed;
     left: 0; bottom: 0;
-    transition: var(--media-query-transition);
+    transition: var(--rebound-transition);
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 136px 136px;
@@ -224,6 +224,7 @@ header > img {
     column-gap: 20px;
     place-items: center;
     transform: translateY(-48px);
+    z-index: 1;
 }
 
 .btns button {
@@ -232,6 +233,8 @@ header > img {
     box-shadow: 0 0 0 20px var(--background);
     border-radius: 50%;
     cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
 #toggle-music-btn {
@@ -290,13 +293,16 @@ header > img {
 
     position: absolute;
     width: 100px; height: 20px;
-    top: -115%; left: 50%;
+    top: 0; left: 50%;
     margin: 0;
-    transform: translateX(-50%) rotate(-90deg);
+    transform: translate(-50%, -95px) rotate(-90deg);
+    transition: transform 1s cubic-bezier(.28,-0.33,.27,1.7),
+                opacity .3s .2s;
 }
 
 #volume-slider.collapsed {
-    
+    transform: translate(-50%, 95px) rotate(-90deg);
+    opacity: 0;
 }
 
 #volume-slider::-webkit-slider-thumb {
@@ -396,6 +402,7 @@ header > img {
 
 #date-time,
 #weather {
+    position: relative;
     transform: translateY(-24px);
 }
 
@@ -536,7 +543,7 @@ header > img {
     text-align: center;
     position: fixed;
     left: 0; bottom: calc(var(--bottom-height) - 10px);
-    transition: var(--media-query-transition);
+    transition: var(--rebound-transition);
 }
 
 #game-wrapper > canvas {
@@ -754,6 +761,15 @@ body.game-mode #slingshot > div {
     .music-controls .btns {
         grid-column: 1 / 2;
         place-items: end;
+    }
+
+    #volume-slider {
+        top: 50%; left: 0;
+        transform: translate(105px, -50%);
+    }
+
+    #volume-slider.collapsed {
+        transform: translate(-105px, -50%);
     }
 
     #date-time,

@@ -8,6 +8,8 @@ const kkLaunchBtn = document.getElementById('kk-launch-btn');
 const musicControls = document.querySelector('.music-controls');
 const toggleMusicBtn = document.getElementById('toggle-music-btn');
 const toggleKKBtn = document.getElementById('toggle-kk-btn');
+const volumeBtn = document.getElementById('volume-btn');
+const volumeSlider = document.getElementById('volume-slider');
 const dateTimeDiv = document.getElementById('date-time');
 const weatherDiv = document.getElementById('weather');
 const header = document.querySelector('header');
@@ -287,6 +289,23 @@ toggleKKBtn.addEventListener('click', () => {
         clearInterval(trackingHourlyMusic);
         document.body.classList.remove('game-mode');
     }
+});
+
+volumeBtn.addEventListener('click', () => {
+    volumeSlider.classList.toggle('collapsed');
+});
+
+document.addEventListener('click', event => {
+    if (event.target != volumeSlider && event.target != volumeBtn) {
+        volumeSlider.classList.add('collapsed');
+    }
+});
+
+volumeSlider.addEventListener('input', () => {
+    music.volume = volumeSlider.value;
+    if (music.volume === 0) volumeBtn.className = 'fas fa-volume-off';
+    else if (music.volume < 0.5) volumeBtn.className = 'fas fa-volume-down';
+    else volumeBtn.className = 'fas fa-volume-up';
 });
 
 slingshotIcon.addEventListener('click', () => {
