@@ -226,7 +226,7 @@ header > img {
     transform: translateY(-48px);
 }
 
-.btns > button {
+.btns button {
     border: none;
     outline: none;
     box-shadow: 0 0 0 20px var(--background);
@@ -268,11 +268,128 @@ header > img {
     height: 110px; width: 110px;
 }
 
+.volume-wrapper {
+    position: relative;
+}
+
 #volume-btn {
     color: var(--text);
     background-color: var(--light);
     font-size: 40px;
     height: 84px; width: 84px;
+}
+
+/* ----------- Volume slider ----------- */
+
+/* Some of the following rules remove browser defaults 
+   so that custom styles may be applied. */
+
+#volume-slider {
+    -webkit-appearance: none;
+    background: transparent;
+
+    position: absolute;
+    width: 100px; height: 20px;
+    top: -115%; left: 50%;
+    margin: 0;
+    transform: translateX(-50%) rotate(-90deg);
+}
+
+#volume-slider.collapsed {
+    
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}
+
+#volume-slider:focus {
+    outline: 1px solid var(--text);
+}
+
+#volume-slider::-ms-track {
+    width: 100%;
+    cursor: pointer;
+    background: transparent; 
+    border-color: transparent;
+    color: transparent;
+}
+
+/* These rules have to be separate. Browsers will drop the 
+   entire selector if they don't understand part of it. :'( */
+
+/* Slider: */
+#volume-slider::-webkit-slider-thumb {
+    background-color: var(--text);
+    width: 20px; height: 100%;
+    border-radius: 50%;
+    margin-top: 0;
+}
+
+#volume-slider::-moz-range-thumb {
+    background-color: var(--text);
+    width: 20px; height: 100%;
+    border-radius: 50%;
+}
+
+#volume-slider::-ms-thumb {
+    background-color: var(--text);
+    width: 20px; height: 100%;
+    border-radius: 50%;
+}
+
+/* Track: */
+#volume-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: var(--light);
+    border-radius: 30px;
+    box-shadow: 0 0 0 10px var(--background);
+}
+  
+#volume-slider:focus::-webkit-slider-runnable-track {
+    background-color: var(--light);
+}
+  
+#volume-slider::-moz-range-track {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: var(--light);
+    border-radius: 30px;
+    box-shadow: 0 0 0 20px var(--background);
+}
+  
+#volume-slider::-ms-track {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    border-width: 16px 0;
+    color: transparent;
+    box-shadow: 0 0 0 20px var(--background);
+}
+
+#volume-slider::-ms-fill-lower {
+    background-color: var(--light);
+    border-radius: 30px;
+    box-shadow: 0 0 0 20px var(--background);
+}
+
+#volume-slider:focus::-ms-fill-lower {
+    background-color: var(--light);
+}
+
+#volume-slider::-ms-fill-upper {
+    background-color: var(--light);
+    border-radius: 30px;
+    box-shadow: 0 0 0 20px var(--background);
+}
+  
+#volume-slider:focus::-ms-fill-upper {
+    background-color: var(--light);
 }
 
 /* ----------- Date/Time ----------- */
