@@ -120,7 +120,7 @@ async function getWeather() {
     user.weather.main = weatherJSON.weather[0].main;
     user.weather.tempC = parseInt(weatherJSON.main.temp) - 273.15;
     user.weather.tempF = (user.weather.tempC * 9/5) + 32;
-    user.weather.imgURL = `http://openweathermap.org/img/w/${weatherJSON.weather[0].icon}.png`;
+    user.weather.imgURL = `https://openweathermap.org/img/w/${weatherJSON.weather[0].icon}.png`;
 }
 
 function calcHourlyMusicId() {
@@ -135,7 +135,7 @@ function calcHourlyMusicId() {
 }
 
 async function getAllKKSongNames() {
-    const songNames = Object.values(await getJSON('http://acnhapi.com/v1/songs')).map(s => s.name['name-USen']);
+    const songNames = Object.values(await getJSON('https://acnhapi.com/v1/songs')).map(s => s.name['name-USen']);
     autocomplete(document.getElementById('kk-input'), songNames);
 }
 
@@ -266,7 +266,7 @@ mainMenu.addEventListener('submit', async event => {
 
 kkMenu.addEventListener('submit', async event => {
     event.preventDefault();
-    const song = Object.values(await getJSON('http://acnhapi.com/v1/songs'))
+    const song = Object.values(await getJSON('https://acnhapi.com/v1/songs'))
         .find(s => s.name['name-USen'] == kkInput.value);
     transitionMusic(() => {getMusic('music', song.id)});
     toggleMusicBtn.classList.add("playing");
