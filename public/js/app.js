@@ -1,3 +1,5 @@
+// DOM ELEMENTS ======================================================= //
+
 const mainMenu = document.getElementById('main-menu');
 const kkMenu = document.getElementById('kk-menu');
 const detectBtn = document.getElementById('detect-btn');
@@ -14,6 +16,8 @@ const dateTimeDiv = document.getElementById('date-time');
 const weatherDiv = document.getElementById('weather');
 const header = document.querySelector('header');
 const slingshotIcon = document.getElementById('slingshot');
+
+// USER OBJECT ======================================================= //
 
 const user = {
     coords: null,
@@ -35,6 +39,7 @@ const user = {
             return this._hour
         },
 
+        // Hours are base-24:
         set hour(value) {
             if (value === 24) {
                 this._hour = 0;
@@ -47,6 +52,8 @@ const user = {
             return this._timeString;
         },
 
+        // If time is formatted with am/pm, this separates time
+        // and am/pm into different variables for styling purposes:
         set timeString(value) {
             const valueArr = value.split(" ");
             if (valueArr.length === 2) {
@@ -58,6 +65,9 @@ const user = {
         }
     }
 }
+
+// GLOBAL VARIABLES ================================================= //
+
 let music = new Audio();
 music.loop = true;
 let seconds = 0;
@@ -65,6 +75,9 @@ let trackingTimeAndWeather;
 let trackingHourlyMusic;
 let updateHourlyMusic = false;
 
+// FUNCTIONS ======================================================= //
+
+// Handles all JSON ajax requests:
 async function getJSON(url) {
     try {
       const response = await fetch(url);
@@ -74,6 +87,7 @@ async function getJSON(url) {
     }
 }
 
+// Detects location using browser's native geolocation API:
 async function detectLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async position => {
@@ -87,17 +101,20 @@ async function detectLocation() {
     }
 }
 
+// Makes call to backend to geocode user-provided address:
 async function enterLocation() {
     const address = locationInput.value;
     const locationJSON = await getJSON(`geocode/${address}`);
     user.coords = [locationJSON.results[0].geometry.location.lat, locationJSON.results[0].geometry.location.lng];
 }
 
+// Makes call to backend to reverse geocode user coordinates and populate input field:
 async function populateInput() {
     const locationJSON = await getJSON(`reverse-geocode/${user.coords[0]},${user.coords[1]}`);
     locationInput.value = locationJSON.results[0].formatted_address;
 }
 
+// Makes call to backend to get local time and formats using local conventions:
 async function getTimeAtCoords() {
     const currentDate = new Date();
     const timestamp = Math.round(currentDate.getTime() / 1000);
@@ -109,20 +126,24 @@ async function getTimeAtCoords() {
         user.dateTime.date = Intl.DateTimeFormat(navigator.language, {month: 'long', day: 'numeric', timeZone: timeZoneJSON.timeZoneId}).format(currentDate);
         user.dateTime.weekday = Intl.DateTimeFormat(navigator.language, {weekday: 'short', timeZone: timeZoneJSON.timeZoneId}).format(currentDate);
         user.dateTime.hour = parseInt(Intl.DateTimeFormat('en-US', {hour: 'numeric', hour12: false, timeZone: timeZoneJSON.timeZoneId}).format(currentDate));
+        // iso is used for datetime html attribute:
         user.dateTime.iso = currentDate.toLocaleString(navigator.language, {timeZone: timeZoneJSON.timeZoneId, timeZoneName: "short"});
     } else {
         alert("Timezone API request failed due to: " + timeZoneJSON.status);
     }
 }
 
+// Makes call to backend to get weather data:
 async function getWeather() {
     const weatherJSON = await getJSON(`weather/${user.coords[0]},${user.coords[1]}`);
     user.weather.main = weatherJSON.weather[0].main;
+    // Temperature is returned in Kelvin, so must be converted to C and F:
     user.weather.tempC = parseInt(weatherJSON.main.temp) - 273.15;
     user.weather.tempF = (user.weather.tempC * 9/5) + 32;
     user.weather.imgURL = `https://openweathermap.org/img/w/${weatherJSON.weather[0].icon}.png`;
 }
 
+// Calculates ACNH API hourly music id using time and weather:
 function calcHourlyMusicId() {
     let id = (user.dateTime.hour * 3) + 1;
     if (['Thunderstorm', 'Drizzle', 'Rain'].includes(user.weather.main)) {
@@ -134,6 +155,7 @@ function calcHourlyMusicId() {
     }
 }
 
+// Gets all K.K. Slider songs and sets up autocomplete (see autocomplete.js):
 async function getAllKKSongNames() {
     const songNames = Object.values(await getJSON('https://acnhapi.com/v1/songs')).map(s => s.name['name-USen']);
     autocomplete(document.getElementById('kk-input'), songNames);
@@ -142,7 +164,7 @@ async function getAllKKSongNames() {
 async function getMusic(type, id) {
     music.pause();
     music.src = `https://acnhapi.com/v1/${type}/${id}`;
-    music.play();
+    await music.play(); // Audio.play method is asynchronous
 }
 
 function fadeInMusic() {
@@ -176,7 +198,7 @@ function fadeOutMusic() {
 
 async function transitionMusic(getNewMusic) {
     if (!music.paused) {
-        // Creates a one-time eventlistener that fires when music is faded out:
+        // Creates a one-time event listener that fires when music is faded out:
         const transitionHandler = async () => {
             await getNewMusic();
             fadeInMusic();
@@ -213,18 +235,22 @@ function printWeather() {
     `;
 }
 
+// Time and weather are tracked to update display and change hourly music:
 async function trackTimeAndWeather() {
     trackingTimeAndWeather = setInterval(async () => {
         let prevHour = user.dateTime.hour;
         let prevWeather = user.weather.main;
+        // Update time every minute:
         if (seconds % 60 === 0) {
             await getTimeAtCoords();
             printTime();
         }
+        // Check weather every 10 minutes (Open Weather API is updated every 10 minutes):
         if (seconds % 600 === 0) {
             await getWeather();
             printWeather();
         }
+        // Update hourly music if time or weather have changed:
         if (prevHour !== user.dateTime.hour || prevWeather !== user.weather.main) {
             updateHourlyMusic = true;
         }
@@ -232,6 +258,7 @@ async function trackTimeAndWeather() {
     }, 1000);
 }
 
+// Check every second if hourly music needs to be updated: 
 function trackHourlyMusic() {
     trackingHourlyMusic = setInterval(async () => {
         if (updateHourlyMusic) {
@@ -242,9 +269,12 @@ function trackHourlyMusic() {
     }, 1000);
 }
 
+// EVENT LISTENERS =================================================== //
+
 detectBtn.addEventListener('click', detectLocation);
 locationInput.addEventListener('change', enterLocation);
 
+// This initilizes most of the app:
 mainMenu.addEventListener('submit', async event => {
     event.preventDefault();
     if (user.coords) {
@@ -264,6 +294,7 @@ mainMenu.addEventListener('submit', async event => {
     }
 });
 
+// Plays K.K. Slider tunes:
 kkMenu.addEventListener('submit', async event => {
     event.preventDefault();
     const song = Object.values(await getJSON('https://acnhapi.com/v1/songs'))
@@ -272,6 +303,7 @@ kkMenu.addEventListener('submit', async event => {
     toggleMusicBtn.classList.add("playing");
 });
 
+// Plays/pauses music:
 toggleMusicBtn.addEventListener('click', () => {
     toggleMusicBtn.classList.toggle("playing");
     if (toggleMusicBtn.classList.contains("playing")) {
@@ -283,6 +315,7 @@ toggleMusicBtn.addEventListener('click', () => {
     }
 });
 
+// Toggles K.K. Slider menu:
 toggleKKBtn.addEventListener('click', () => {
     document.body.classList.toggle('kk-mode');
     if (document.body.classList.contains('kk-mode')) {
@@ -291,16 +324,19 @@ toggleKKBtn.addEventListener('click', () => {
     }
 });
 
+// Toggles volume slider when button is clicked:
 volumeBtn.addEventListener('click', () => {
     volumeSlider.classList.toggle('collapsed');
 });
 
+// Hides volume slider if user clicks away:
 document.addEventListener('click', event => {
     if (event.target != volumeSlider && event.target != volumeBtn) {
         volumeSlider.classList.add('collapsed');
     }
 });
 
+// Changes audio volume and updates button icon when slider is moved:
 volumeSlider.addEventListener('input', () => {
     music.volume = volumeSlider.value;
     if (music.volume === 0) volumeBtn.className = 'fas fa-volume-off';
@@ -308,6 +344,7 @@ volumeSlider.addEventListener('input', () => {
     else volumeBtn.className = 'fas fa-volume-up';
 });
 
+// Toggles mini-game and shows 'equipped' icon when icon is clicked:
 slingshotIcon.addEventListener('click', () => {
     gameWrapper.innerHTML = '';
     document.body.classList.toggle('game-mode');
@@ -317,4 +354,5 @@ slingshotIcon.addEventListener('click', () => {
     }
 });
 
+// Sets up autocomplete on page load:
 document.addEventListener('DOMContentLoaded', getAllKKSongNames);

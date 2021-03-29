@@ -168,6 +168,7 @@ header > img {
     grid-area: manual-input;
 }
 
+/* This isn't working at the moment, not sure why: */
 ::placeholder, /* Chrome, Firefox, Opera, Safari 10.1+ */
 :-ms-input-placeholder, /* Internet Explorer 10-11 */
 ::-ms-input-placeholder { /* Microsoft Edge */
@@ -503,6 +504,7 @@ header > img {
 /* ======================================
    ============= K.K. MODE ============== 
    ====================================== */
+   
     body.kk-mode {
         background: black url('img/kk-slider-background.jpg') no-repeat center 0;
         flex-direction: row;

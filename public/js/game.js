@@ -1,7 +1,7 @@
-var Game = Game || {};
 const gameWrapper = document.getElementById('game-wrapper');
 
-Game.slingshot = function() {
+var Game = Game || {};
+Game.slingshot = () => {
     const Engine = Matter.Engine,
         Render = Matter.Render,
         Runner = Matter.Runner,
@@ -71,7 +71,7 @@ Game.slingshot = function() {
         type: 'line'
     };
     const elastics = {
-        // Note: If left and right elastics are used to propel the rock, they will counteract
+        // If left and right elastics are used to propel the rock, they will counteract
         // each other, affecting the rock's trajectory. To fix this, I added an invisible 
         // center elastic, which provides the actual driving force.
 
@@ -166,7 +166,7 @@ Game.slingshot = function() {
         Body.setPosition(balloon, { x: px, y: py });
     };
 
-    // Sets initial position to avoid present flailing:
+    // Sets initial position to avoid present flailing everywhere:
     const initBalloonPresent = (balloonPresent) => {
         floatBalloon(balloonPresent);
         const [balloon, present] = balloonPresent.bodies;
@@ -187,7 +187,7 @@ Game.slingshot = function() {
     });
 
     Events.on(engine, 'afterUpdate', () => {
-        // Create new rock when slingshot is fired:
+        // Create new rock and re-attach elastics when slingshot is fired:
         if (mouseConstraint.mouse.button === -1 && (rock.position.y < 435)) {
             rock = Bodies.circle(400, 445, 10, rockOptions);
             World.add(engine.world, rock);
@@ -240,6 +240,7 @@ Game.slingshot = function() {
             }
         });
     
+    // Open fallen presents on click:
     Events.on(mouseConstraint, 'mouseup', () => {
         const presents = engine.world.bodies.filter(b => b.label === 'present');
         const items = ['30000bells', '1000bells', 'clay', 'iron', 'gold', 'furniture', 'glasses', 'hat', 'shirt', 'dress', 'bottoms', 'socks', 'shoes']

@@ -1,14 +1,15 @@
-// Load Node modules
+// Load Node modules:
 const express = require('express');
 const fetch = require('node-fetch');
+// Get API keys:
 require('dotenv').config();
 const openWeatherKey = process.env.OPEN_WEATHER_KEY;
 const googleKey = process.env.GOOGLE_KEY;
-// Initialize Express
+// Initialize Express:
 const app = express();
-// Render static files
+// Render static files:
 app.use(express.static('public'));
-// Port website will run on
+// Port website will run on:
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
 

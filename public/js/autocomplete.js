@@ -57,6 +57,8 @@ function autocomplete(input, arr) {
     });
 
     // Navigate items with keyboard:
+    // (I want to add a way to scroll down automatically with arrow keys,
+    // but haven't gotten to that yet)
     input.addEventListener("keydown", event => {
         var list = document.getElementById(input.id + "-autocomplete-list");
         if (list) {
