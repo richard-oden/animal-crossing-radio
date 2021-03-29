@@ -620,6 +620,9 @@ body.game-mode #slingshot > div {
 .autocomplete-items .result {
     padding: 0 12px 6px 12px;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .autocomplete-items .result:first-child {
