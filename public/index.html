@@ -13,29 +13,29 @@
         <h1>RADIO</h1>
     </header>
     <form id="main-menu" class="menu">
-        <button id="detect-btn" type="button">Get my location</button>
-        <input id="manual-input" type="text" placeholder="Or enter it here..." required>
-        <button id="launch-btn" type="submit">Start!</button>
+        <button id="detect-btn" type="button" aria-label="Detect location">Get my location</button>
+        <input id="manual-input" type="text" aria-label="Enter location" placeholder="Or enter it here..." required>
+        <button id="launch-btn" type="submit" aria-label="Start playing hourly music">Start!</button>
     </form>
     <form id="kk-menu" class="menu" autocomplete='off'>
         <div class='autocomplete'>
-            <input id="kk-input" type="text" placeholder="Search for a song..." required>
+            <input id="kk-input" type="text" aria-label="Search for a song" placeholder="Search for a song..." required>
         </div>
-        <button id="kk-launch-btn" type="submit">Start!</button>
+        <button id="kk-launch-btn" type="submit" aria-label="Start playing song">Start!</button>
     </form>
     <div id="game-wrapper"></div>
     <div class="music-controls collapsed">
         <div class="btns">
-            <button id="toggle-music-btn" type="button"></button>
-            <button id="toggle-kk-btn" type="button"></button>
+            <button id="toggle-music-btn" type="button" aria-label="Play or pause music"></button>
+            <button id="toggle-kk-btn" type="button" aria-label="Toggle K.K. Slider menu"></button>
             <div class="volume-wrapper">
-                <button id="volume-btn" class="fas fa-volume-up" type="button"></button>
-                <input id="volume-slider" class="collapsed" type="range" min="0" max="1" step="any" value="1">
+                <button id="volume-btn" class="fas fa-volume-up" type="button" aria-label="Toggle volume slider"></button>
+                <input id="volume-slider" class="collapsed" type="range" aria-label="Volume" min="0" max="1" step="any" value="1">
             </div>
         </div>
         <div id="date-time"></div>
         <div id="weather"></div>
-        <div id="slingshot">
+        <div id="slingshot" role="button" tabindex="0" aria-label="Open mini-game">
             <div></div>
         </div>
     </div>

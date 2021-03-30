@@ -271,6 +271,16 @@ function trackHourlyMusic() {
 
 // EVENT LISTENERS =================================================== //
 
+// Let the document know when the mouse is being used
+document.body.addEventListener('mousedown', () => {
+    document.body.classList.add('using-mouse');
+});
+  
+// Re-enable focus styling when Tab is pressed
+document.body.addEventListener('keydown', event => {
+    if (event.key === 'Tab') document.body.classList.remove('using-mouse');
+});
+
 detectBtn.addEventListener('click', detectLocation);
 locationInput.addEventListener('change', enterLocation);
 
@@ -352,6 +362,10 @@ slingshotIcon.addEventListener('click', () => {
         document.body.classList.remove('kk-mode');
         Game.slingshot();
     }
+});
+
+slingshotIcon.addEventListener("keydown", event => {
+    if (event.key === 'Enter') event.target.click();
 });
 
 // Sets up autocomplete on page load:

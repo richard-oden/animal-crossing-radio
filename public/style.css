@@ -67,6 +67,16 @@ body {
     transition: all 2s;
 }
 
+body :focus {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--text);
+}
+
+body.using-mouse :focus {
+    box-shadow: none;
+    outline: none;
+}
+
 /* ======================================
    =============== HEADER =============== 
    ====================================== */
@@ -176,7 +186,8 @@ header > img {
     opacity: 1; /* Firefox*/
 }
 
-.menu button:hover {
+.menu button:hover,
+.menu button:focus {
     background-image: linear-gradient(
         145deg,
         transparent 10%,
@@ -191,6 +202,7 @@ header > img {
         var(--dark) 90% 100%
     );
     animation: btn-background 3s linear infinite;
+    box-shadow: 0 0 0 7px var(--light) inset;
 }
 
 /* ======================================
@@ -235,6 +247,16 @@ header > img {
     border-radius: 50%;
     cursor: pointer;
     position: relative;
+    z-index: 1;
+}
+
+.btns button:focus {
+    box-shadow: 0 0 0 4px var(--text), 0 0 0 20px var(--background);
+    z-index: 2;
+}
+
+body.using-mouse .btns button:focus {
+    box-shadow: 0 0 0 20px var(--background);
     z-index: 1;
 }
 
@@ -312,6 +334,10 @@ header > img {
 
 #volume-slider:focus {
     outline: 1px solid var(--text);
+}
+
+body.using-mouse #volume-slider:focus {
+    outline: none;
 }
 
 #volume-slider::-ms-track {
@@ -802,11 +828,13 @@ body.game-mode #slingshot > div {
         width: 80px; height: 80px;
     }
 
-    #slingshot:hover {
+    #slingshot:hover,
+    #slingshot:focus {
         width: 90px; height: 90px;
     }
 
-    #slingshot:hover > div {
+    #slingshot:hover > div,
+    #slingshot:focus > div {
         width: 28px; height: 28px;
     }
 }

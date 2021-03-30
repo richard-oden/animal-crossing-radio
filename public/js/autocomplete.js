@@ -41,9 +41,10 @@ function autocomplete(input, arr) {
             const list = document.createElement('ul');
             list.id = input.id + '-autocomplete-list';
             list.className = 'autocomplete-items';
+            list.setAttribute('role', 'listbox');
             const matchingItems = arr.filter(item => item.toLowerCase().includes(input.value.toLowerCase()));
             matchingItems.length === 0 ? list.innerHTML += '<div class="result">No results found. :(</div>' :
-                matchingItems.forEach(matchingItem => list.innerHTML += `<li class="result">${matchingItem}</li>`);
+                matchingItems.forEach(matchingItem => list.innerHTML += `<li class="result" role="option">${matchingItem}</li>`);
             input.parentNode.appendChild(list);
         }
     });
