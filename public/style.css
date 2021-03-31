@@ -100,6 +100,8 @@ header > h1 {
     color: var(--neon);
     animation: blink 12s infinite;
     -webkit-animation: blink 12s infinite;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 header > img {
