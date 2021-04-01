@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
         document.body.classList.add('using-safari');
         alert(`Hello! Thanks for visiting my site! It looks like you're using Safari. 
-            I went ahead and disabled some things that Safari doesn't like. For best 
-            results, using a different browser is recommended. :)`);
+I went ahead and disabled some things that Safari doesn't like. For best 
+results, using a different browser is recommended. :)`);
     }
 });
