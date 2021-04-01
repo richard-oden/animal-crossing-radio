@@ -79,6 +79,11 @@ body.using-mouse :focus {
     outline: none;
 }
 
+/* This prevents background image flickering on safari: */
+body.using-safari {
+    transition: none;
+}
+
 /* ======================================
    =============== HEADER =============== 
    ====================================== */
@@ -111,6 +116,7 @@ header > img {
 /* ======================================
    =============== MENUS ================ 
    ====================================== */
+
 .menu,
 .menu input,
 .menu button,

@@ -370,3 +370,18 @@ slingshotIcon.addEventListener("keydown", event => {
 
 // Sets up autocomplete on page load:
 document.addEventListener('DOMContentLoaded', getAllKKSongNames);
+
+// Shows safari version on page load:
+// This is done to prevent background image flickering. Ideally I
+// would have a better solution for this,
+document.addEventListener('DOMContentLoaded', () => {
+    // Ensures user agent string does not contain chrome or android.
+    // iOS versions of chrome will still include safari in their user
+    // agent string.
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+        document.body.classList.add('using-safari');
+        alert(`Hello! Thanks for visiting my site! It looks like you're using Safari. 
+            I went ahead and disabled some things that Safari doesn't like. For best 
+            results, using a different browser is recommended. :)`);
+    }
+});
